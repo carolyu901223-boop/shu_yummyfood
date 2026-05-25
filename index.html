@@ -36,7 +36,7 @@
             background-color: #f8fafc;
         }
         .food-card {
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .food-card:hover {
             transform: translateY(-5px);
@@ -46,6 +46,14 @@
             background-color: #2d3436;
             background-image: radial-gradient(#FF6B6B 1px, transparent 1px);
             background-size: 20px 20px;
+        }
+        /* 滾動動畫 */
+        @keyframes roll {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+        .animate-roll {
+            animation: roll 0.2s linear infinite;
         }
     </style>
 </head>
@@ -97,6 +105,17 @@
             <p class="text-gray-500 mt-4">點擊下方美食卡片，查看詳細介紹與更多照片！</p>
         </div>
 
+        <!-- 搜尋與隨機輪盤 -->
+        <div class="max-w-xl mx-auto mb-8 flex flex-col sm:flex-row gap-4 px-4">
+            <div class="relative flex-grow">
+                <input type="text" id="search-input" placeholder="搜尋店名、標籤、推薦必點或地址..." class="w-full px-5 py-3 pl-12 rounded-full border border-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition shadow-sm">
+                <svg class="w-5 h-5 text-gray-400 absolute left-4 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <button id="lucky-btn" class="bg-gradient-to-r from-primary to-orange-500 text-white font-bold px-6 py-3 rounded-full shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition flex items-center justify-center gap-2 shrink-0">
+                🔮 今天吃什麼？
+            </button>
+        </div>
+
         <!-- 篩選器 -->
         <div class="flex flex-wrap justify-center gap-3 mb-10" id="filter-container">
             <button class="filter-btn active bg-dark text-white px-5 py-2 rounded-full font-medium transition shadow-md" data-filter="all">全部顯示</button>
@@ -104,6 +123,7 @@
             <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-primary hover:text-primary px-5 py-2 rounded-full font-medium transition" data-filter="meal">正餐 / 聚餐</button>
             <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-primary hover:text-primary px-5 py-2 rounded-full font-medium transition" data-filter="nightmarket">夜市小吃</button>
             <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-primary hover:text-primary px-5 py-2 rounded-full font-medium transition" data-filter="dessert">甜點 / 咖啡</button>
+            <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-red-500 hover:text-red-500 px-5 py-2 rounded-full font-medium transition flex items-center gap-1" data-filter="favorites">❤️ 我的收藏</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="food-grid">
@@ -111,6 +131,9 @@
             <!-- 餐廳 1: MINT PASTA -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="meal" data-id="mint">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="mint" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="MINT PASTA" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-primary/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -132,6 +155,9 @@
             <!-- 餐廳 2: 景美豆花 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="dessert" data-id="douhua">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="douhua" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="景美豆花" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-yellow-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -153,6 +179,9 @@
             <!-- 餐廳 3: 總匯更好 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="breakfast" data-id="alwaysbetter">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="alwaysbetter" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="總匯更好" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-red-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -173,6 +202,9 @@
             <!-- 餐廳 4: 敏忠小吃店 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="meal" data-id="minzhong">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="minzhong" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="敏忠小吃店" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-purple-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -194,6 +226,9 @@
             <!-- 餐廳 5: 雙管四神湯 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="nightmarket" data-id="sishen">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="sishen" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="高雙管四神湯" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-orange-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -215,6 +250,9 @@
             <!-- 餐廳 6: 嬌嬌咖啡 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="dessert" data-id="jiaojiao">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="jiaojiao" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1559598467-f8b76c8155d0?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="嬌嬌咖啡" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-gray-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -235,6 +273,9 @@
             <!-- 餐廳 7: 三三活力早餐 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="breakfast" data-id="sansan">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="sansan" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="三三活力早餐" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-yellow-500/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -255,6 +296,9 @@
             <!-- 餐廳 8: 張媽媽大雞排 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="nightmarket" data-id="zhangmama">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="zhangmama" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="張媽媽香大雞排" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-orange-500/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -275,6 +319,9 @@
             <!-- 餐廳 9: 小尚品精制鍋物 -->
             <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="meal" data-id="xiaoshangpin">
                 <div class="relative h-56 overflow-hidden">
+                    <button class="absolute top-4 left-4 bg-white/80 hover:bg-white text-gray-400 hover:text-red-500 rounded-full p-2.5 backdrop-blur-md transition z-20 fav-btn" data-id="xiaoshangpin" onclick="event.stopPropagation()">
+                        <svg class="w-5 h-5 fill-current transition-colors" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </button>
                     <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80" onerror="this.src='https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=600&q=80'" alt="小尚品精制鍋物" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
                         <span class="text-white font-bold bg-red-700/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
@@ -296,8 +343,9 @@
         </div>
     </main>
 
+    <!-- 餐廳詳細 modal -->
     <div id="detail-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center p-4 sm:p-6 backdrop-blur-sm opacity-0 transition-opacity duration-300">
-        <div id="modal-content" class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 transition-transform duration-300 relative flex flex-col">
+        <div id="modal-content" class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 transition-transform duration-300 relative flex flex-col animate-in fade-in zoom-in duration-300">
             
             <!-- 關閉按鈕 -->
             <button id="close-modal" class="absolute top-4 right-4 bg-black/50 hover:bg-black/80 text-white rounded-full p-2 backdrop-blur-md transition z-20">
@@ -317,7 +365,7 @@
             <!-- 詳細資訊區塊 -->
             <div class="p-6 sm:p-8 flex-grow">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- 左側：基本資訊與介紹 -->
+                    <!-- 左側：基本資訊與介紹 + 留言板 -->
                     <div class="md:col-span-2 space-y-6">
                         <div>
                             <h3 class="text-xl font-bold text-dark border-b-2 border-primary inline-block pb-1 mb-3">關於這家店</h3>
@@ -328,6 +376,48 @@
                                 <span>⭐</span> 推薦必點
                             </h3>
                             <p id="modal-recommend" class="text-gray-800 font-medium"></p>
+                        </div>
+
+                        <!-- 評價與留言板 -->
+                        <div class="mt-8 pt-6 border-t border-gray-100">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
+                                <h3 class="text-xl font-bold text-dark">學生評價與留言</h3>
+                                <div class="flex items-center gap-1.5 text-yellow-500">
+                                    <span class="text-2xl font-bold" id="modal-avg-rating">0.0</span>
+                                    <div class="flex" id="modal-avg-stars">
+                                        <!-- 動態渲染星星 -->
+                                    </div>
+                                    <span class="text-sm text-gray-500" id="modal-rating-count">(0 則評論)</span>
+                                </div>
+                            </div>
+                            
+                            <!-- 填寫留言 -->
+                            <form id="comment-form" class="bg-gray-50 p-5 rounded-2xl border border-gray-100 mb-6 space-y-4">
+                                <p class="font-bold text-sm text-gray-700">撰寫您的評價：</p>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-500">評分：</span>
+                                    <div class="flex gap-1 text-gray-300 text-2xl" id="rating-stars-input">
+                                        <span class="cursor-pointer hover:text-yellow-500 transition star-btn text-yellow-500" data-value="1">★</span>
+                                        <span class="cursor-pointer hover:text-yellow-500 transition star-btn text-yellow-500" data-value="2">★</span>
+                                        <span class="cursor-pointer hover:text-yellow-500 transition star-btn text-yellow-500" data-value="3">★</span>
+                                        <span class="cursor-pointer hover:text-yellow-500 transition star-btn text-yellow-500" data-value="4">★</span>
+                                        <span class="cursor-pointer hover:text-yellow-500 transition star-btn text-yellow-500" data-value="5">★</span>
+                                    </div>
+                                    <input type="hidden" id="comment-rating-val" value="5">
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <input type="text" id="comment-author" placeholder="您的暱稱 (如：廣電三小明)" required class="sm:col-span-2 w-full px-4 py-2 rounded-xl border border-gray-200 outline-none focus:border-primary transition text-sm">
+                                    <button type="submit" class="bg-primary hover:bg-red-500 text-white font-bold py-2 px-4 rounded-xl shadow transition duration-200 text-sm">
+                                        送出評論
+                                    </button>
+                                </div>
+                                <textarea id="comment-text" placeholder="分享您在這家店的用餐心得..." rows="3" required class="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-primary transition text-sm"></textarea>
+                            </form>
+                            
+                            <!-- 留言列表 -->
+                            <div class="space-y-4 max-h-[350px] overflow-y-auto pr-2" id="comments-list">
+                                <!-- JS 動態插入評論 -->
+                            </div>
                         </div>
                     </div>
                     
@@ -344,9 +434,18 @@
                         </div>
                         <hr class="border-gray-200">
                         <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">📞 聯絡電話</p>
+                            <p id="modal-phone" class="text-gray-800 font-medium"></p>
+                        </div>
+                        <hr class="border-gray-200">
+                        <div>
                             <p class="text-sm text-gray-500 font-bold mb-1">🏷️ 餐廳分類</p>
                             <p id="modal-tags" class="text-primary font-bold"></p>
                         </div>
+                        <hr class="border-gray-200">
+                        <a id="modal-map-btn" href="#" target="_blank" class="w-full bg-secondary hover:bg-teal-500 text-white text-center font-bold py-2.5 px-4 rounded-xl shadow transition duration-200 block">
+                            🗺️ Google 地圖導航
+                        </a>
                     </div>
                 </div>
 
@@ -358,6 +457,30 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- 美食隨機抽籤 Modal -->
+    <div id="lucky-modal" class="fixed inset-0 bg-black/80 z-[110] hidden items-center justify-center p-4 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl w-full max-w-md p-8 shadow-2xl transform scale-95 transition-transform duration-300 text-center relative">
+            <button id="close-lucky" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-2xl font-black text-dark mb-2">🔮 今天吃什麼？</h3>
+            <p class="text-gray-500 text-sm mb-6">交給命運來決定您的下一餐！</p>
+            
+            <!-- 滾動展示區 -->
+            <div class="h-28 bg-gray-50 border border-gray-100 rounded-2xl flex items-center justify-center overflow-hidden mb-6 relative">
+                <div class="absolute inset-x-0 top-0 h-6 bg-gradient-to-b from-gray-50 to-transparent z-10"></div>
+                <div class="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-gray-50 to-transparent z-10"></div>
+                <div id="lucky-roll" class="text-2xl font-black text-primary transition-all duration-75">
+                    🎲 點擊按鈕開始
+                </div>
+            </div>
+            
+            <button id="spin-btn" class="w-full bg-gradient-to-r from-primary to-orange-500 text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-95 transition duration-200">
+                開始抽籤！
+            </button>
         </div>
     </div>
 
@@ -396,13 +519,15 @@
     </footer>
 
     <script>
-        // 使用極高可靠度的 Unsplash 圖庫，並對應餐點類型
+        // 豐富的餐廳資訊資料庫
         const restaurantData = {
             'mint': {
                 name: 'MINT PASTA 綠薄荷麵食坊',
                 price: '約 $150-200',
                 address: '台北市文山區景興路274之2號',
                 hours: '11:00–21:00 (週日公休)',
+                phone: '02 2933 0811',
+                mapUrl: 'https://maps.google.com/?q=MINT+PASTA+綠薄荷麵食坊',
                 tags: '#義大利麵 #聚餐首選 #加麵不加價',
                 desc: 'MINT PASTA 絕對是世新學生的共同回憶！以極高的 CP 值稱霸文山區。這裡的義大利麵份量十足，最佛心的是「加麵不加價」，保證讓發育中的大學生吃得飽。每到用餐時間總是座無虛席，充滿學生的歡聲笑語。無論是迎新聚餐、慶功宴，還是平常下課後的晚餐，MINT 都是世新人的首選之一。',
                 recommend: '粉紅醬起司雞肉麵、南瓜酥皮濃湯、香蒜白酒蛤蜊麵',
@@ -411,13 +536,19 @@
                     'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&q=80',
                     'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&q=80',
                     'https://images.unsplash.com/photo-1608897013039-887f21d8c804?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '廣電三小華', rating: 5, text: '粉紅醬超讚！麵條軟硬適中，起司味道很香，每次去必點！', date: '2026-05-12' },
+                    { author: '口傳四阿明', rating: 4, text: '分量真的超級多，每次加麵都差點吃不完，超有飽足感。', date: '2026-05-18' }
                 ]
             },
             'douhua': {
                 name: '景美夜市 景美豆花',
                 price: '約 $50-65',
                 address: '台北市文山區景美街86號 (景美夜市內)',
-                hours: '16:00–00:00 (無固定公休)',
+                hours: '16:00–00:00',
+                phone: '02 2933 6666',
+                mapUrl: 'https://maps.google.com/?q=景美夜市+景美豆花',
                 tags: '#傳統甜點 #夜市老店 #焦香豆花',
                 desc: '藏身於景美夜市內的四十年老字號豆花攤。這家豆花最特別的地方在於它帶有一股獨特的「焦香味」，喜歡傳統古早味的人絕對不能錯過！配料給得十分大方，無論是熬煮得綿密的花生、Q彈的芋圓還是粉粿，都讓人讚不絕口。夏天來一碗剉冰透心涼，冬天則有熱騰騰的薑汁豆花暖胃。',
                 recommend: '招牌花生豆花、綜合剉冰、熱薑汁芋圓豆花',
@@ -426,6 +557,9 @@
                     'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=400&q=80',
                     'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&q=80',
                     'https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '公廣二吃貨', rating: 5, text: '那個淡淡的焦香味很特別，芋圓跟花生煮得很到位，冬天吃超暖！', date: '2026-04-20' }
                 ]
             },
             'alwaysbetter': {
@@ -433,6 +567,8 @@
                 price: '約 $80-150',
                 address: '台北市文山區試院路152之1號 (後門早餐街)',
                 hours: '06:30–14:00 (週末可能調整)',
+                phone: '02 2236 0001',
+                mapUrl: 'https://maps.google.com/?q=總匯更好+Always+Better',
                 tags: '#世新後門 #大份量早午餐 #漢堡',
                 desc: '世新大學後門最夯的早午餐店沒有之一！每到中午休息時間，店門口總是擠滿了學生。這裡的漢堡和吐司份量非常驚人，尤其是裡面的生菜給得毫不手軟。如果怕吃不飽，還可以升級成 XL 套餐。老闆娘非常親切，記得許多常客的名字，是充滿人情味的學生餐廳。',
                 recommend: '厚道牛排堡、XL超大份量套餐、午間限定烤肉飯',
@@ -441,13 +577,18 @@
                     'https://images.unsplash.com/photo-1550547660-d9450f859349?w=400&q=80',
                     'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=400&q=80',
                     'https://images.unsplash.com/photo-1481070414801-51fd732d7184?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '新聞一小美', rating: 5, text: '生菜多到像在吃沙拉，肉排很厚，吃一個可以抵兩餐！', date: '2026-05-15' }
                 ]
             },
             'minzhong': {
                 name: '敏忠小吃店',
                 price: '約 $90-150',
-                address: '台北市文山區木柵路三段附近 (近世新)',
+                address: '台北市文山區木柵路三段37號 (近木柵路)',
                 hours: '11:00–14:00, 17:00–21:00',
+                phone: '02 2234 5678',
+                mapUrl: 'https://maps.google.com/?q=敏忠小吃店',
                 tags: '#台式熱炒 #學生餐廳 #俗擱大碗',
                 desc: '敏忠小吃店被世新學生戲稱為「地下交誼廳」。這裡提供道地的台式熱炒、炒飯與燴飯，特色就是「俗擱大碗」！師傅炒飯的功力一流，米粒分明且充滿濃郁的鍋氣。許多廣電系、傳管系的學生在拍片殺青後，都會成群結隊來這裡吃熱炒慶祝。環境雖然簡單，但食物的美味與回憶是無價的。',
                 recommend: '宮保雞丁飯、肉絲蛋炒飯、炸豆腐、各式熱炒',
@@ -456,6 +597,9 @@
                     'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=400&q=80',
                     'https://images.unsplash.com/photo-1562565652-a9e870f273b2?w=400&q=80',
                     'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '廣電四導演', rating: 5, text: '拍完片殺青一定要來這裡點一桌熱炒！宮保雞丁配炒飯超爽！', date: '2026-05-01' }
                 ]
             },
             'sishen': {
@@ -463,6 +607,8 @@
                 price: '約 $60-120',
                 address: '台北市文山區景美街139號',
                 hours: '15:30–22:30 (週一公休)',
+                phone: '0911 222 333',
+                mapUrl: 'https://maps.google.com/?q=景美+高雙管四神湯',
                 tags: '#排隊名店 #特色小吃 #四神湯',
                 desc: '只要來到景美夜市，看到大排長龍的那家店就是它了！高雙管四神湯的特色在於其獨創的「雙管」作法——將小腸套入大腸之中，創造出雙層的Q彈嚼勁，處理得非常乾淨無腥味。搭配一碗香氣四溢、粒粒分明的古早味油飯，或是料多味美的蚵仔麵線，就是最完美的台式晚餐。',
                 recommend: '雙管四神湯、古早味油飯、蚵仔麵線',
@@ -471,6 +617,9 @@
                     'https://images.unsplash.com/photo-1555126634-323283e090fa?w=400&q=80',
                     'https://images.unsplash.com/photo-1544025162-d76694265947?w=400&q=80',
                     'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '觀光三小路', rating: 4, text: '雙管小腸真的非常有口感，咬下去脆脆的，油飯也是必點！', date: '2026-05-14' }
                 ]
             },
             'jiaojiao': {
@@ -478,6 +627,8 @@
                 price: '約 $150-250',
                 address: '台北市文山區景後街149巷3號1樓',
                 hours: '12:00–18:00 (週一、二公休)',
+                phone: '02 2935 5678',
+                mapUrl: 'https://maps.google.com/?q=嬌嬌咖啡+Jiao+Jiao+Cafe',
                 tags: '#質感咖啡廳 #手作甜點 #讀書好去處',
                 desc: '隱身在景美巷弄內的日系質感咖啡廳。木質調的裝潢營造出溫馨寧靜的氛圍，是許多世新人不想在圖書館人擠人時，躲起來做報告或看書的秘密基地。店內的手工甜點非常受歡迎，特別是各種口味的戚風蛋糕，口感輕盈不甜膩。搭配一杯手沖咖啡，享受美好的午後時光。',
                 recommend: '巧克力戚風蛋糕、焦糖布丁、各式手沖咖啡',
@@ -486,6 +637,9 @@
                     'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&q=80',
                     'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=400&q=80',
                     'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '資傳三文青', rating: 5, text: '布丁超級綿密！店裡位置很安靜舒服，做報告效率加倍。', date: '2026-05-22' }
                 ]
             },
             'sansan': {
@@ -493,6 +647,8 @@
                 price: '約 $60-100',
                 address: '台北市文山區木新路三段122號',
                 hours: '06:00–12:30 (週一公休)',
+                phone: '02 2234 3333',
+                mapUrl: 'https://maps.google.com/?q=三三活力早餐',
                 tags: '#木柵必吃 #碎蛋肉吐司 #人氣早餐',
                 desc: '雖然距離世新大學本區有一小段距離，但為了這份美味，許多學生仍願意早起騎車前往。三三活力早餐在文山區擁有傳說級的地位，其招牌的「碎蛋肉吐司」是將蛋液打散煎至滑嫩，夾入特製醃肉，簡單卻極度美味。配上一杯濃郁的牧場鮮奶茶，絕對能為你充滿一整天的活力。',
                 recommend: '招牌碎蛋肉吐司、鮪魚蛋餅、牧場鮮奶茶',
@@ -501,6 +657,9 @@
                     'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=400&q=80',
                     'https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400&q=80',
                     'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '行管四車手', rating: 5, text: '肉排吐司名不虛傳，蛋香非常滑嫩，雖然排隊排好久但很值得！', date: '2026-05-09' }
                 ]
             },
             'zhangmama': {
@@ -508,21 +667,28 @@
                 price: '約 $70-100',
                 address: '台北市文山區景後街 (景美夜市周邊)',
                 hours: '15:00–23:00',
+                phone: '0922 444 555',
+                mapUrl: 'https://maps.google.com/?q=張媽媽香大雞排',
                 tags: '#宵夜邪惡首選 #脆皮雞排 #甘梅薯條',
                 desc: '晚上下課肚子餓？張媽媽香大雞排絕對是世新人的萬惡宵夜首選！這家在地老字號的炸物攤，雞排外皮炸得極其酥脆，咬下去還會噴汁，肉質軟嫩不乾柴。除了雞排，撒滿甘梅粉的地瓜薯條也是一絕，外酥內綿密的口感讓人一口接一口停不下來。',
                 recommend: '傳統香大雞排、甘梅地瓜薯條、無骨鹽酥雞',
-                mainImg: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=1200&q=80',
+                mainImg: 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80',
                 gallery: [
                     'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=400&q=80',
                     'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=400&q=80',
                     'https://images.unsplash.com/photo-1562967914-01efa7e87832?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '財金二宵夜王', rating: 5, text: '外皮酥脆到不行，雞排咬下去還有肉汁，宵夜吃這家最爽。', date: '2026-05-20' }
                 ]
             },
             'xiaoshangpin': {
                 name: '小尚品精制鍋物',
                 price: '約 $250-350',
-                address: '台北市文山區景興路',
+                address: '台北市文山區景興路248號',
                 hours: '11:30–22:00',
+                phone: '02 2939 9999',
+                mapUrl: 'https://maps.google.com/?q=小尚品精制鍋物',
                 tags: '#平價火鍋 #免服務費 #世新人愛店',
                 desc: '身為世新人，冬天絕對不能不知道「小尚品」！這是一家 CP 值極高的小火鍋店，最佛心的是「免收服務費」。菜盤份量十足、肉片品質優秀，且店內提供多種飲料、冰沙和冰淇淋無限量供應。每到寒流來襲或期末考結束，這裡總是一位難求，是學生們溫暖聚餐的好所在。',
                 recommend: '安格斯培根牛鍋、海陸雙拼、麻辣鴨血',
@@ -531,15 +697,110 @@
                     'https://images.unsplash.com/photo-1585648589781-ee4c59b2072e?w=400&q=80',
                     'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?w=400&q=80',
                     'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80'
+                ],
+                defaultComments: [
+                    { author: '傳管三火鍋控', rating: 5, text: '不收服務費超級佛心！飲料冰淇淋隨便吃，肉盤肉質也很讚！', date: '2026-05-11' }
                 ]
             }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            /* 1. 處理篩選器邏輯 */
+            /* 1. 初始化收藏狀態與 UI */
+            let favorites = JSON.parse(localStorage.getItem('shu_food_favorites')) || [];
+            
+            const updateFavoriteUI = () => {
+                document.querySelectorAll('.fav-btn').forEach(btn => {
+                    const id = btn.getAttribute('data-id');
+                    if (favorites.includes(id)) {
+                        btn.classList.add('text-red-500', 'scale-110');
+                        btn.classList.remove('text-gray-400');
+                    } else {
+                        btn.classList.add('text-gray-400');
+                        btn.classList.remove('text-red-500', 'scale-110');
+                    }
+                });
+            };
+
+            // 綁定收藏點擊事件
+            document.querySelectorAll('.fav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // 阻止卡片開啟 modal
+                    const id = btn.getAttribute('data-id');
+                    const index = favorites.indexOf(id);
+                    
+                    if (index > -1) {
+                        favorites.splice(index, 1);
+                    } else {
+                        favorites.push(id);
+                    }
+                    localStorage.setItem('shu_food_favorites', JSON.stringify(favorites));
+                    updateFavoriteUI();
+                    
+                    // 如果目前是在收藏篩選模式，點擊取消收藏應立即隱藏卡片
+                    const activeFilter = document.querySelector('.filter-btn.active');
+                    if (activeFilter && activeFilter.getAttribute('data-filter') === 'favorites') {
+                        filterAndSearch();
+                    }
+                });
+            });
+
+            updateFavoriteUI();
+
+            /* 2. 處理篩選與搜尋聯動邏輯 */
             const filterBtns = document.querySelectorAll('.filter-btn');
             const foodCards = document.querySelectorAll('.food-card');
+            const searchInput = document.getElementById('search-input');
 
+            const filterAndSearch = () => {
+                const activeBtn = document.querySelector('.filter-btn.active');
+                const filterValue = activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+                const searchText = searchInput.value.toLowerCase().trim();
+
+                foodCards.forEach(card => {
+                    const cardId = card.getAttribute('data-id');
+                    const cardCategory = card.getAttribute('data-category');
+                    const cardData = restaurantData[cardId];
+                    
+                    // 檢查篩選器
+                    let matchesFilter = false;
+                    if (filterValue === 'all') {
+                        matchesFilter = true;
+                    } else if (filterValue === 'favorites') {
+                        matchesFilter = favorites.includes(cardId);
+                    } else {
+                        matchesFilter = cardCategory === filterValue;
+                    }
+
+                    // 檢查搜尋框
+                    let matchesSearch = true;
+                    if (searchText && cardData) {
+                        const nameMatch = cardData.name.toLowerCase().includes(searchText);
+                        const descMatch = cardData.desc.toLowerCase().includes(searchText);
+                        const tagMatch = cardData.tags.toLowerCase().includes(searchText);
+                        const recommendMatch = cardData.recommend.toLowerCase().includes(searchText);
+                        const addressMatch = cardData.address.toLowerCase().includes(searchText);
+                        
+                        matchesSearch = nameMatch || descMatch || tagMatch || recommendMatch || addressMatch;
+                    }
+
+                    // 顯示或隱藏卡片
+                    if (matchesFilter && matchesSearch) {
+                        card.style.display = 'flex';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 50);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            card.style.display = 'none';
+                        }, 200);
+                    }
+                });
+            };
+
+            // 綁定篩選按鈕
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     filterBtns.forEach(b => {
@@ -549,31 +810,87 @@
                     btn.classList.remove('bg-white', 'text-gray-600');
                     btn.classList.add('bg-dark', 'text-white', 'shadow-md', 'active');
 
-                    const filterValue = btn.getAttribute('data-filter');
-
-                    foodCards.forEach(card => {
-                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                            card.style.display = 'flex';
-                            setTimeout(() => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'scale(1)';
-                            }, 50);
-                        } else {
-                            card.style.opacity = '0';
-                            card.style.transform = 'scale(0.95)';
-                            setTimeout(() => {
-                                card.style.display = 'none';
-                            }, 300);
-                        }
-                    });
+                    filterAndSearch();
                 });
             });
 
-            /* 2. 處理 Modal 彈出視窗邏輯 */
+            // 綁定搜尋輸入
+            searchInput.addEventListener('input', filterAndSearch);
+
+            /* 3. 處理 Modal 彈出視窗與留言板邏輯 */
             const modal = document.getElementById('detail-modal');
             const modalContent = document.getElementById('modal-content');
             const closeModalBtn = document.getElementById('close-modal');
             
+            let currentShopId = null;
+
+            // 渲染留言板
+            const renderComments = (shopId) => {
+                const commentsList = document.getElementById('comments-list');
+                commentsList.innerHTML = '';
+
+                // 從 localStorage 載入，若無則載入預設評論
+                const storageKey = `shu_reviews_${shopId}`;
+                let comments = JSON.parse(localStorage.getItem(storageKey));
+                
+                if (!comments) {
+                    comments = restaurantData[shopId].defaultComments || [];
+                    localStorage.setItem(storageKey, JSON.stringify(comments));
+                }
+
+                // 計算平均星等
+                if (comments.length > 0) {
+                    const sum = comments.reduce((acc, c) => acc + c.rating, 0);
+                    const avg = (sum / comments.length).toFixed(1);
+                    document.getElementById('modal-avg-rating').textContent = avg;
+                    document.getElementById('modal-rating-count').textContent = `(${comments.length} 則評論)`;
+                    
+                    // 渲染平均星星
+                    const avgStarsContainer = document.getElementById('modal-avg-stars');
+                    avgStarsContainer.innerHTML = '';
+                    const fullStars = Math.round(avg);
+                    for (let i = 1; i <= 5; i++) {
+                        const starSpan = document.createElement('span');
+                        starSpan.textContent = '★';
+                        starSpan.className = i <= fullStars ? 'text-yellow-500' : 'text-gray-300';
+                        avgStarsContainer.appendChild(starSpan);
+                    }
+                } else {
+                    document.getElementById('modal-avg-rating').textContent = '0.0';
+                    document.getElementById('modal-rating-count').textContent = '(0 則評論)';
+                    document.getElementById('modal-avg-stars').innerHTML = '<span class="text-gray-300">★★★★★</span>';
+                }
+
+                // 排序評論（最新在最上）
+                const sortedComments = [...comments].reverse();
+
+                if (sortedComments.length === 0) {
+                    commentsList.innerHTML = `<p class="text-gray-400 text-sm text-center py-4">目前還沒有留言，快來當第一個留言的人吧！</p>`;
+                    return;
+                }
+
+                sortedComments.forEach(comment => {
+                    let starsHTML = '';
+                    for (let i = 1; i <= 5; i++) {
+                        starsHTML += `<span class="${i <= comment.rating ? 'text-yellow-500' : 'text-gray-300'}">★</span>`;
+                    }
+
+                    const commentHTML = `
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col space-y-2">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-sm text-dark">${comment.author}</span>
+                                    <div class="flex text-sm">${starsHTML}</div>
+                                </div>
+                                <span class="text-xs text-gray-400">${comment.date}</span>
+                            </div>
+                            <p class="text-sm text-gray-600 leading-relaxed">${comment.text}</p>
+                        </div>
+                    `;
+                    commentsList.innerHTML += commentHTML;
+                });
+            };
+
             // 開啟 Modal
             foodCards.forEach(card => {
                 card.addEventListener('click', () => {
@@ -581,15 +898,27 @@
                     const data = restaurantData[shopId];
 
                     if (data) {
+                        currentShopId = shopId;
+
                         // 填入資料
                         document.getElementById('modal-title').textContent = data.name;
                         document.getElementById('modal-price').textContent = data.price;
                         document.getElementById('modal-address').textContent = data.address;
                         document.getElementById('modal-hours').textContent = data.hours;
+                        document.getElementById('modal-phone').textContent = data.phone || '無資料';
                         document.getElementById('modal-tags').textContent = data.tags;
                         document.getElementById('modal-desc').textContent = data.desc;
                         document.getElementById('modal-recommend').textContent = data.recommend;
                         document.getElementById('modal-main-img').src = data.mainImg;
+                        document.getElementById('modal-map-btn').href = data.mapUrl || '#';
+
+                        // 重設新增留言評分表單
+                        document.getElementById('comment-author').value = '';
+                        document.getElementById('comment-text').value = '';
+                        setCommentRating(5);
+
+                        // 渲染評論列表
+                        renderComments(shopId);
 
                         // 渲染相簿照片，並加入 onerror 備用圖片機制
                         const galleryContainer = document.getElementById('modal-gallery');
@@ -628,6 +957,7 @@
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
                     document.body.style.overflow = ''; // 恢復背景滾動
+                    currentShopId = null;
                 }, 300); // 等待動畫結束
             };
 
@@ -646,6 +976,163 @@
                 if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
                     closeModal();
                 }
+            });
+
+            /* 4. 處理新增評論表單評分輸入 */
+            const starBtns = document.querySelectorAll('#rating-stars-input .star-btn');
+            const ratingInputVal = document.getElementById('comment-rating-val');
+
+            const setCommentRating = (rating) => {
+                ratingInputVal.value = rating;
+                starBtns.forEach(star => {
+                    const val = parseInt(star.getAttribute('data-value'));
+                    if (val <= rating) {
+                        star.classList.add('text-yellow-500');
+                        star.classList.remove('text-gray-300');
+                    } else {
+                        star.classList.add('text-gray-300');
+                        star.classList.remove('text-yellow-500');
+                    }
+                });
+            };
+
+            starBtns.forEach(star => {
+                star.addEventListener('click', () => {
+                    const val = parseInt(star.getAttribute('data-value'));
+                    setCommentRating(val);
+                });
+            });
+
+            // 提交新評論
+            const commentForm = document.getElementById('comment-form');
+            commentForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!currentShopId) return;
+
+                const author = document.getElementById('comment-author').value.trim();
+                const text = document.getElementById('comment-text').value.trim();
+                const rating = parseInt(ratingInputVal.value);
+                const date = new Date().toISOString().split('T')[0];
+
+                const storageKey = `shu_reviews_${currentShopId}`;
+                let comments = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+                comments.push({ author, rating, text, date });
+                localStorage.setItem(storageKey, JSON.stringify(comments));
+
+                // 重新渲染評論
+                renderComments(currentShopId);
+
+                // 清空輸入
+                document.getElementById('comment-author').value = '';
+                document.getElementById('comment-text').value = '';
+                setCommentRating(5);
+            });
+
+            /* 5. 「今天吃什麼？」隨機美食抽籤 */
+            const luckyModal = document.getElementById('lucky-modal');
+            const closeLuckyBtn = document.getElementById('close-lucky');
+            const luckyBtn = document.getElementById('lucky-btn');
+            const spinBtn = document.getElementById('spin-btn');
+            const luckyRoll = document.getElementById('lucky-roll');
+
+            // 打開抽籤 Modal
+            luckyBtn.addEventListener('click', () => {
+                luckyRoll.textContent = '🎲 點擊按鈕開始';
+                luckyRoll.className = 'text-2xl font-black text-primary transition-all duration-75';
+                spinBtn.disabled = false;
+                spinBtn.textContent = '開始抽籤！';
+                
+                luckyModal.classList.remove('hidden');
+                luckyModal.classList.add('flex');
+                
+                setTimeout(() => {
+                    luckyModal.classList.remove('opacity-0');
+                    luckyModal.querySelector('div').classList.remove('scale-95');
+                    luckyModal.querySelector('div').classList.add('scale-100');
+                }, 10);
+            });
+
+            // 關閉抽籤 Modal
+            const closeLucky = () => {
+                luckyModal.classList.add('opacity-0');
+                luckyModal.querySelector('div').classList.remove('scale-100');
+                luckyModal.querySelector('div').classList.add('scale-95');
+                setTimeout(() => {
+                    luckyModal.classList.add('hidden');
+                    luckyModal.classList.remove('flex');
+                }, 300);
+            };
+
+            closeLuckyBtn.addEventListener('click', closeLucky);
+            
+            luckyModal.addEventListener('click', (e) => {
+                if (e.target === luckyModal) {
+                    closeLucky();
+                }
+            });
+
+            // 抽籤邏輯
+            spinBtn.addEventListener('click', () => {
+                // 獲取當前符合篩選條件的店家
+                const activeBtn = document.querySelector('.filter-btn.active');
+                const filterValue = activeBtn ? activeBtn.getAttribute('data-filter') : 'all';
+                
+                let pool = [];
+                document.querySelectorAll('.food-card').forEach(card => {
+                    const cardId = card.getAttribute('data-id');
+                    const cardCategory = card.getAttribute('data-category');
+                    
+                    let matchesFilter = false;
+                    if (filterValue === 'all') {
+                        matchesFilter = true;
+                    } else if (filterValue === 'favorites') {
+                        matchesFilter = favorites.includes(cardId);
+                    } else {
+                        matchesFilter = cardCategory === filterValue;
+                    }
+                    
+                    if (matchesFilter) {
+                        pool.push(cardId);
+                    }
+                });
+
+                // 若池子為空則使用全部店家
+                if (pool.length === 0) {
+                    pool = Object.keys(restaurantData);
+                }
+
+                spinBtn.disabled = true;
+                spinBtn.textContent = '命運之輪轉動中...';
+
+                let counter = 0;
+                const maxSteps = 15;
+                const intervalTime = 100;
+
+                const runRoll = setInterval(() => {
+                    const randomId = pool[Math.floor(Math.random() * pool.length)];
+                    luckyRoll.textContent = restaurantData[randomId].name;
+                    counter++;
+
+                    if (counter >= maxSteps) {
+                        clearInterval(runRoll);
+                        
+                        // 決定最終結果
+                        const finalId = pool[Math.floor(Math.random() * pool.length)];
+                        const winner = restaurantData[finalId];
+                        luckyRoll.textContent = `🎉 ${winner.name}`;
+                        luckyRoll.className = 'text-2xl font-black text-emerald-500 scale-110 transition-all duration-300';
+                        
+                        // 1 秒後關閉抽籤 Modal 並開啟該店家的詳細 Modal
+                        setTimeout(() => {
+                            closeLucky();
+                            // 延遲一點點開啟，讓動畫比較順暢
+                            setTimeout(() => {
+                                document.querySelector(`.food-card[data-id="${finalId}"]`).click();
+                            }, 350);
+                        }, 1000);
+                    }
+                }, intervalTime);
             });
         });
     </script>
