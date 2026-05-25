@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>世新大學周邊美食指南 | SHU Food Map</title>
+    <meta name="description" content="探索世新大學、景美夜市周邊必吃美食！包含早午餐、義大利麵、傳統小吃與甜點，世新學生的最愛清單全收錄。">
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 自訂 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#FF6B6B',
+                        secondary: '#4ECDC4',
+                        dark: '#2D3436'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 引入 Google Fonts: Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+        .food-card {
+            transition: all 0.3s ease;
+        }
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .hero-pattern {
+            background-color: #2d3436;
+            background-image: radial-gradient(#FF6B6B 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span class="font-bold text-xl text-dark tracking-wide">世新美食誌</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="text-gray-600 hover:text-primary font-medium transition">關於本站</a>
+                    <a href="#restaurants" class="text-gray-600 hover:text-primary font-medium transition">美食總覽</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative bg-dark text-white overflow-hidden hero-pattern">
+        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32 flex flex-col items-center text-center">
+            <span class="inline-block py-1 px-3 rounded-full bg-primary/20 text-primary border border-primary/50 text-sm font-semibold mb-4 tracking-wider">
+                SHU FOOD GUIDE
+            </span>
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black mb-6 leading-tight">
+                吃飽才有力氣拍片做報告！<br>
+                <span class="text-primary">世新大學</span> 周邊美食全攻略
+            </h1>
+            <p class="mt-4 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto font-light">
+                從景美夜市的銅板小吃，到後門早餐街的晨間補給，以及同學聚餐最愛的義大利麵與熱炒。這份清單，帶你吃遍世新人的青春回憶。
+            </p>
+            <div class="mt-10">
+                <a href="#restaurants" class="bg-primary hover:bg-red-500 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105 inline-block">
+                    開始探索美食 🍽️
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full" id="restaurants">
+        
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-dark mb-4">精選人氣名單</h2>
+            <div class="w-16 h-1 bg-primary mx-auto rounded"></div>
+            <p class="text-gray-500 mt-4">點擊下方美食卡片，查看詳細介紹與更多照片！</p>
+        </div>
+
+        <!-- 篩選器 -->
+        <div class="flex flex-wrap justify-center gap-3 mb-10" id="filter-container">
+            <button class="filter-btn active bg-dark text-white px-5 py-2 rounded-full font-medium transition shadow-md" data-filter="all">全部顯示</button>
+            <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-primary hover:text-primary px-5 py-2 rounded-full font-medium transition" data-filter="breakfast">早午餐</button>
+            <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-primary hover:text-primary px-5 py-2 rounded-full font-medium transition" data-filter="meal">正餐 / 聚餐</button>
+            <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-primary hover:text-primary px-5 py-2 rounded-full font-medium transition" data-filter="nightmarket">夜市小吃</button>
+            <button class="filter-btn bg-white text-gray-600 border border-gray-300 hover:border-primary hover:text-primary px-5 py-2 rounded-full font-medium transition" data-filter="dessert">甜點 / 咖啡</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="food-grid">
+            
+            <!-- 餐廳 1: MINT PASTA -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="meal" data-id="mint">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=600&q=80" alt="MINT PASTA" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-primary/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                    <div class="absolute top-4 right-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow z-20">必吃神店</div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-primary transition-colors">MINT PASTA 綠薄荷麵食坊</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $150-200</span>
+                    </div>
+                    <p class="text-sm text-primary font-medium mb-3">📍 景美商圈 (景興路)</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        被譽為「世新人的義大利麵信仰」，以極高CP值稱霸文山區。份量超大且加麵不加價！粉紅醬起司雞肉麵與酥皮濃湯是世新學生的最愛，聚餐首選。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 餐廳 2: 景美豆花 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="dessert" data-id="douhua">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=600&q=80" alt="景美豆花" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-yellow-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                    <div class="absolute top-4 right-4 bg-yellow-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-20">古早味</div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-yellow-600 transition-colors">景美夜市 景美豆花</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $50-65</span>
+                    </div>
+                    <p class="text-sm text-yellow-600 font-medium mb-3">📍 景美夜市內</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        位於景美市場內的四十年老攤。堅持傳統製法，豆花帶有獨特的淡淡「焦香味」。夏天吃粉圓冰消暑，冬天喝熱花生甜湯暖胃，是學生課後的甜蜜點心。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 餐廳 3: 總匯更好 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="breakfast" data-id="alwaysbetter">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80" alt="總匯更好" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-red-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-red-500 transition-colors">總匯更好 Always Better</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $80-150</span>
+                    </div>
+                    <p class="text-sm text-red-500 font-medium mb-3">📍 試院路 (世新後門)</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        世新大學後門早餐街的人氣早午餐店，每到中午總是人潮爆滿！漢堡裡的生菜多到滿出來，提供超大份量的XL套餐，是早八上課前的神仙補給。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 餐廳 4: 敏忠小吃店 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="meal" data-id="minzhong">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=600&q=80" alt="敏忠小吃店" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-purple-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                    <div class="absolute top-4 right-4 bg-secondary text-white text-xs font-bold px-3 py-1 rounded-full shadow z-20">超大份量</div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-purple-600 transition-colors">敏忠小吃店</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $90-150</span>
+                    </div>
+                    <p class="text-sm text-purple-600 font-medium mb-3">📍 木柵路三段附近</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        被戲稱為「世新人的地下交誼廳」，是無數學生討論分組報告、慶祝拍片殺青的聖地。炒飯粒粒分明充滿鍋氣，台式熱炒便宜又大碗，男大生也能吃超飽。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 餐廳 5: 雙管四神湯 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="nightmarket" data-id="sishen">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1548943487-a2e4f43b4850?auto=format&fit=crop&w=600&q=80" alt="高雙管四神湯" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-orange-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                    <div class="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-20">排隊名店</div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-orange-600 transition-colors">景美 高雙管四神湯</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $60-120</span>
+                    </div>
+                    <p class="text-sm text-orange-600 font-medium mb-3">📍 景美夜市內</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        景美夜市最具代表性的排隊老店。獨創將小腸套疊的「雙管」作法，吃起來Q彈有嚼勁。搭配香氣四溢的古早味油飯或是鮮甜的蚵仔麵線，絕對是一絕！
+                    </p>
+                </div>
+            </div>
+
+            <!-- 餐廳 6: 嬌嬌咖啡 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="dessert" data-id="jiaojiao">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1559598467-f8b76c8155d0?auto=format&fit=crop&w=600&q=80" alt="嬌嬌咖啡" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-gray-600/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-gray-600 transition-colors">嬌嬌咖啡 Jiao Jiao Cafe</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $150-250</span>
+                    </div>
+                    <p class="text-sm text-gray-500 font-medium mb-3">📍 景後街 (景美巷弄)</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        隱身在景美巷弄內的質感咖啡廳，是許多世新人躲起來做報告、享受寧靜午後的秘密基地。店內手工戚風蛋糕十分出名，環境溫馨可愛。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 餐廳 7: 三三活力早餐 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="breakfast" data-id="sansan">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1484723091791-0fee59cb0c47?auto=format&fit=crop&w=600&q=80" alt="三三活力早餐" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-yellow-500/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-yellow-600 transition-colors">三三活力早餐</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $60-100</span>
+                    </div>
+                    <p class="text-sm text-yellow-600 font-medium mb-3">📍 木新路三段</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        文山區傳說級的早餐店，雖然離學校有一小段距離，但名氣極大。招牌的「碎蛋肉吐司」將蛋液打碎煎至滑嫩，配上醃製肉片，是喚醒早八學生的最強美味。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 餐廳 8: 張媽媽大雞排 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="nightmarket" data-id="zhangmama">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80" alt="張媽媽香大雞排" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-orange-500/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-orange-500 transition-colors">張媽媽香大雞排</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $70-100</span>
+                    </div>
+                    <p class="text-sm text-orange-500 font-medium mb-3">📍 景後街</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        在地老牌的傳統炸雞排攤位，皮脆肉多汁，是學生下課後解饞的萬惡首選。除了大雞排，他們的甘梅薯條和無骨鹽酥雞也是必點品項。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 餐廳 9: 小尚品精制鍋物 -->
+            <div class="food-card bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 flex flex-col cursor-pointer group relative" data-category="meal" data-id="xiaoshangpin">
+                <div class="relative h-56 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1563379091339-03b2184f4f4d?auto=format&fit=crop&w=600&q=80" alt="小尚品精制鍋物" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                        <span class="text-white font-bold bg-red-700/90 px-6 py-2 rounded-full transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">查看介紹與照片 👀</span>
+                    </div>
+                    <div class="absolute top-4 right-4 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow z-20">佛心火鍋</div>
+                </div>
+                <div class="p-6 flex-grow flex flex-col">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-xl font-bold text-dark group-hover:text-red-700 transition-colors">小尚品精制鍋物</h3>
+                        <span class="text-sm font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded shrink-0 ml-2">約 $250-350</span>
+                    </div>
+                    <p class="text-sm text-red-700 font-medium mb-3">📍 景興路</p>
+                    <p class="text-gray-600 text-sm mb-4 flex-grow leading-relaxed line-clamp-3">
+                        身為世新人絕對不能不知的火鍋店，冬天總是一位難求。價格佛心且免收服務費，菜盤豐盛、肉質優秀，還有飲料冰淇淋無限享用。
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="detail-modal" class="fixed inset-0 bg-black/80 z-[100] hidden items-center justify-center p-4 sm:p-6 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <div id="modal-content" class="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl transform scale-95 transition-transform duration-300 relative flex flex-col">
+            
+            <!-- 關閉按鈕 -->
+            <button id="close-modal" class="absolute top-4 right-4 bg-black/50 hover:bg-black/80 text-white rounded-full p-2 backdrop-blur-md transition z-20">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
+            <!-- 主視覺圖 -->
+            <div class="relative w-full h-64 sm:h-80 shrink-0">
+                <img id="modal-main-img" src="" alt="Main Image" class="w-full h-full object-cover rounded-t-3xl">
+                <div class="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <div class="absolute bottom-4 left-6 right-6 flex justify-between items-end">
+                    <h2 id="modal-title" class="text-3xl sm:text-4xl font-bold text-white drop-shadow-md">餐廳名稱</h2>
+                    <span id="modal-price" class="bg-primary text-white px-3 py-1.5 rounded-full font-bold text-sm sm:text-base shadow-lg shrink-0 mb-1">價格區間</span>
+                </div>
+            </div>
+
+            <!-- 詳細資訊區塊 -->
+            <div class="p-6 sm:p-8 flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- 左側：基本資訊與介紹 -->
+                    <div class="md:col-span-2 space-y-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-dark border-b-2 border-primary inline-block pb-1 mb-3">關於這家店</h3>
+                            <p id="modal-desc" class="text-gray-700 leading-relaxed text-lg"></p>
+                        </div>
+                        <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                            <h3 class="text-lg font-bold text-dark mb-3 flex items-center gap-2">
+                                <span>⭐</span> 推薦必點
+                            </h3>
+                            <p id="modal-recommend" class="text-gray-800 font-medium"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- 右側：營業資訊 -->
+                    <div class="space-y-4 bg-gray-50 p-6 rounded-2xl border border-gray-100 h-fit">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">📍 餐廳地址</p>
+                            <p id="modal-address" class="text-gray-800 font-medium"></p>
+                        </div>
+                        <hr class="border-gray-200">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">🕒 營業時間</p>
+                            <p id="modal-hours" class="text-gray-800 font-medium"></p>
+                        </div>
+                        <hr class="border-gray-200">
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold mb-1">🏷️ 餐廳分類</p>
+                            <p id="modal-tags" class="text-primary font-bold"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 更多照片 (相簿) -->
+                <div class="mt-10">
+                    <h3 class="text-xl font-bold text-dark border-b-2 border-primary inline-block pb-1 mb-4">更多照片</h3>
+                    <div id="modal-gallery" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <!-- JS 動態插入照片 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white pt-12 pb-8 mt-auto" id="about">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div>
+                    <h4 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                        </svg>
+                        世新美食誌
+                    </h4>
+                    <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+                        本站致力於收集並介紹世新大學周邊、景美夜市及木柵地區的經典美食。無論你是大一新生還是即將畢業的老骨頭，希望這個網站能成為你的覓食指南。
+                    </p>
+                </div>
+                <div class="md:text-right">
+                    <h4 class="text-lg font-bold mb-4">實用連結</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="https://www.shu.edu.tw/" target="_blank" class="hover:text-primary transition">世新大學官網</a></li>
+                        <li><a href="#" class="hover:text-primary transition">回報錯誤或推薦美食</a></li>
+                    </ul>
+                    <div class="mt-6 text-sm">
+                        <span class="inline-flex items-center gap-1 bg-gray-800 px-3 py-1 rounded-full text-gray-300">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd"></path></svg>
+                            Ready for GitHub Pages
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-8 text-center text-sm text-gray-500">
+                <p>&copy; 2026 世新美食誌 SHU Food Guide. Designed for students.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 餐廳詳細資料庫 (包含更多介紹、完整地址與相簿照片)
+        const restaurantData = {
+            'mint': {
+                name: 'MINT PASTA 綠薄荷麵食坊',
+                price: '約 $150-200',
+                address: '台北市文山區景興路274之2號',
+                hours: '11:00–21:00 (週日公休)',
+                tags: '#義大利麵 #聚餐首選 #加麵不加價',
+                desc: 'MINT PASTA 絕對是世新學生的共同回憶！以極高的 CP 值稱霸文山區。這裡的義大利麵份量十足，最佛心的是「加麵不加價」，保證讓發育中的大學生吃得飽。每到用餐時間總是座無虛席，充滿學生的歡聲笑語。無論是迎新聚餐、慶功宴，還是平常下課後的晚餐，MINT 都是世新人的首選之一。',
+                recommend: '粉紅醬起司雞肉麵、南瓜酥皮濃湯、香蒜白酒蛤蜊麵',
+                mainImg: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1621996311239-531e21b711a6?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1633337474564-1d9410ef50ad?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'douhua': {
+                name: '景美夜市 景美豆花',
+                price: '約 $50-65',
+                address: '台北市文山區景美街86號 (景美夜市內)',
+                hours: '16:00–00:00 (無固定公休)',
+                tags: '#傳統甜點 #夜市老店 #焦香豆花',
+                desc: '藏身於景美夜市內的四十年老字號豆花攤。這家豆花最特別的地方在於它帶有一股獨特的「焦香味」，喜歡傳統古早味的人絕對不能錯過！配料給得十分大方，無論是熬煮得綿密的花生、Q彈的芋圓還是粉粿，都讓人讚不絕口。夏天來一碗剉冰透心涼，冬天則有熱騰騰的薑汁豆花暖胃。',
+                recommend: '招牌花生豆花、綜合剉冰、熱薑汁芋圓豆花',
+                mainImg: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1615486171448-4af30aa97816?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'alwaysbetter': {
+                name: '總匯更好 Always Better',
+                price: '約 $80-150',
+                address: '台北市文山區試院路152之1號 (後門早餐街)',
+                hours: '06:30–14:00 (週末可能調整)',
+                tags: '#世新後門 #大份量早午餐 #漢堡',
+                desc: '世新大學後門最夯的早午餐店沒有之一！每到中午休息時間，店門口總是擠滿了學生。這裡的漢堡和吐司份量非常驚人，尤其是裡面的生菜給得毫不手軟。如果怕吃不飽，還可以升級成 XL 套餐。老闆娘非常親切，記得許多常客的名字，是充滿人情味的學生餐廳。',
+                recommend: '厚道牛排堡、XL超大份量套餐、午間限定烤肉飯',
+                mainImg: 'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1509722747041-616f39b57569?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'minzhong': {
+                name: '敏忠小吃店',
+                price: '約 $90-150',
+                address: '台北市文山區木柵路三段附近 (近世新)',
+                hours: '11:00–14:00, 17:00–21:00',
+                tags: '#台式熱炒 #學生餐廳 #俗擱大碗',
+                desc: '敏忠小吃店被世新學生戲稱為「地下交誼廳」。這裡提供道地的台式熱炒、炒飯與燴飯，特色就是「俗擱大碗」！師傅炒飯的功力一流，米粒分明且充滿濃郁的鍋氣。許多廣電系、傳管系的學生在拍片殺青後，都會成群結隊來這裡吃熱炒慶祝。環境雖然簡單，但食物的美味與回憶是無價的。',
+                recommend: '宮保雞丁飯、肉絲蛋炒飯、炸豆腐、各式熱炒',
+                mainImg: 'https://images.unsplash.com/photo-1555507036-ab1e4006aa07?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1562565652-a9e870f273b2?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'sishen': {
+                name: '景美 高雙管四神湯',
+                price: '約 $60-120',
+                address: '台北市文山區景美街139號',
+                hours: '15:30–22:30 (週一公休)',
+                tags: '#排隊名店 #特色小吃 #四神湯',
+                desc: '只要來到景美夜市，看到大排長龍的那家店就是它了！高雙管四神湯的特色在於其獨創的「雙管」作法——將小腸套入大腸之中，創造出雙層的Q彈嚼勁，處理得非常乾淨無腥味。搭配一碗香氣四溢、粒粒分明的古早味油飯，或是料多味美的蚵仔麵線，就是最完美的台式晚餐。',
+                recommend: '雙管四神湯、古早味油飯、蚵仔麵線',
+                mainImg: 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'jiaojiao': {
+                name: '嬌嬌咖啡 Jiao Jiao Cafe',
+                price: '約 $150-250',
+                address: '台北市文山區景後街149巷3號1樓',
+                hours: '12:00–18:00 (週一、二公休)',
+                tags: '#質感咖啡廳 #手作甜點 #讀書好去處',
+                desc: '隱身在景美巷弄內的日系質感咖啡廳。木質調的裝潢營造出溫馨寧靜的氛圍，是許多世新人不想在圖書館人擠人時，躲起來做報告或看書的秘密基地。店內的手工甜點非常受歡迎，特別是各種口味的戚風蛋糕，口感輕盈不甜膩。搭配一杯手沖咖啡，享受美好的午後時光。',
+                recommend: '巧克力戚風蛋糕、焦糖布丁、各式手沖咖啡',
+                mainImg: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'sansan': {
+                name: '三三活力早餐',
+                price: '約 $60-100',
+                address: '台北市文山區木新路三段122號',
+                hours: '06:00–12:30 (週一公休)',
+                tags: '#木柵必吃 #碎蛋肉吐司 #人氣早餐',
+                desc: '雖然距離世新大學本區有一小段距離，但為了這份美味，許多學生仍願意早起騎車前往。三三活力早餐在文山區擁有傳說級的地位，其招牌的「碎蛋肉吐司」是將蛋液打散煎至滑嫩，夾入特製醃肉，簡單卻極度美味。配上一杯濃郁的牧場鮮奶茶，絕對能為你充滿一整天的活力。',
+                recommend: '招牌碎蛋肉吐司、鮪魚蛋餅、牧場鮮奶茶',
+                mainImg: 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'zhangmama': {
+                name: '張媽媽香大雞排',
+                price: '約 $70-100',
+                address: '台北市文山區景後街 (景美夜市周邊)',
+                hours: '15:00–23:00',
+                tags: '#宵夜邪惡首選 #脆皮雞排 #甘梅薯條',
+                desc: '晚上下課肚子餓？張媽媽香大雞排絕對是世新人的萬惡宵夜首選！這家在地老字號的炸物攤，雞排外皮炸得極其酥脆，咬下去還會噴汁，肉質軟嫩不乾柴。除了雞排，撒滿甘梅粉的地瓜薯條也是一絕，外酥內綿密的口感讓人一口接一口停不下來。',
+                recommend: '傳統香大雞排、甘梅地瓜薯條、無骨鹽酥雞',
+                mainImg: 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1576107232684-1279f390859f?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1562967914-01efa7e87832?auto=format&fit=crop&w=400&q=80'
+                ]
+            },
+            'xiaoshangpin': {
+                name: '小尚品精制鍋物',
+                price: '約 $250-350',
+                address: '台北市文山區景興路',
+                hours: '11:30–22:00',
+                tags: '#平價火鍋 #免服務費 #世新人愛店',
+                desc: '身為世新人，冬天絕對不能不知道「小尚品」！這是一家 CP 值極高的小火鍋店，最佛心的是「免收服務費」。菜盤份量十足、肉片品質優秀，且店內提供多種飲料、冰沙和冰淇淋無限量供應。每到寒流來襲或期末考結束，這裡總是一位難求，是學生們溫暖聚餐的好所在。',
+                recommend: '安格斯培根牛鍋、海陸雙拼、麻辣鴨血',
+                mainImg: 'https://images.unsplash.com/photo-1585648589781-ee4c59b2072e?auto=format&fit=crop&w=1200&q=80',
+                gallery: [
+                    'https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80',
+                    'https://images.unsplash.com/photo-1563805042-7684c8e9e533?auto=format&fit=crop&w=400&q=80'
+                ]
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            /* 1. 處理篩選器邏輯 */
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const foodCards = document.querySelectorAll('.food-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-dark', 'text-white', 'shadow-md', 'active');
+                        b.classList.add('bg-white', 'text-gray-600');
+                    });
+                    btn.classList.remove('bg-white', 'text-gray-600');
+                    btn.classList.add('bg-dark', 'text-white', 'shadow-md', 'active');
+
+                    const filterValue = btn.getAttribute('data-filter');
+
+                    foodCards.forEach(card => {
+                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                            card.style.display = 'flex';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'scale(1)';
+                            }, 50);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'scale(0.95)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+
+            /* 2. 處理 Modal 彈出視窗邏輯 */
+            const modal = document.getElementById('detail-modal');
+            const modalContent = document.getElementById('modal-content');
+            const closeModalBtn = document.getElementById('close-modal');
+            
+            // 開啟 Modal
+            foodCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const shopId = card.getAttribute('data-id');
+                    const data = restaurantData[shopId];
+
+                    if (data) {
+                        // 填入資料
+                        document.getElementById('modal-title').textContent = data.name;
+                        document.getElementById('modal-price').textContent = data.price;
+                        document.getElementById('modal-address').textContent = data.address;
+                        document.getElementById('modal-hours').textContent = data.hours;
+                        document.getElementById('modal-tags').textContent = data.tags;
+                        document.getElementById('modal-desc').textContent = data.desc;
+                        document.getElementById('modal-recommend').textContent = data.recommend;
+                        document.getElementById('modal-main-img').src = data.mainImg;
+
+                        // 渲染相簿照片
+                        const galleryContainer = document.getElementById('modal-gallery');
+                        galleryContainer.innerHTML = ''; // 清空舊照片
+                        data.gallery.forEach(imgSrc => {
+                            const imgHTML = `
+                                <div class="overflow-hidden rounded-xl h-32 md:h-48 shadow-sm border border-gray-100 group">
+                                    <img src="${imgSrc}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Gallery Image">
+                                </div>
+                            `;
+                            galleryContainer.innerHTML += imgHTML;
+                        });
+
+                        // 顯示 Modal
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                        document.body.style.overflow = 'hidden'; // 防止背景滾動
+                        
+                        // 觸發動畫
+                        setTimeout(() => {
+                            modal.classList.remove('opacity-0');
+                            modalContent.classList.remove('scale-95');
+                            modalContent.classList.add('scale-100');
+                        }, 10);
+                    }
+                });
+            });
+
+            // 關閉 Modal 的函數
+            const closeModal = () => {
+                modal.classList.add('opacity-0');
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95');
+                
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = ''; // 恢復背景滾動
+                }, 300); // 等待動畫結束
+            };
+
+            // 點擊關閉按鈕
+            closeModalBtn.addEventListener('click', closeModal);
+
+            // 點擊背景遮罩關閉
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+            
+            // 按下 ESC 鍵關閉
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
