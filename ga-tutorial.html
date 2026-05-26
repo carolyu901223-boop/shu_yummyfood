@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HDB1KMXVL4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-HDB1KMXVL4');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GA4 串接歷程分享 | 世新大學周邊美食指南</title>
+    <meta name="description" content="記錄「世新美食誌」串接 Google Analytics 4 (GA4) 的實作過程，從基本程式碼埋設到 YouTube 影片播放自訂事件追蹤，以及利用 Data API 進行自動化流量數據整理。">
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 自訂 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#FF6B6B',
+                        secondary: '#4ECDC4',
+                        dark: '#2D3436'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 引入 Google Fonts: Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- 導覽列 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span class="font-bold text-xl text-dark tracking-wide">世新美食誌</span>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-primary font-medium transition">返回首頁</a>
+                    <a href="analysis.html" class="text-gray-600 hover:text-primary font-medium transition">PTT 美食數據</a>
+                    <a href="ga-tutorial.html" class="text-primary font-bold transition">GA4 串接歷程</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 頂部 Header -->
+    <header class="bg-dark text-white py-16 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 opacity-60"></div>
+        <div class="relative max-w-4xl mx-auto px-4 text-center">
+            <span class="inline-block py-1 px-3 rounded-full bg-secondary/20 text-secondary border border-secondary/50 text-xs font-semibold mb-4 tracking-wider uppercase">
+                GA4 Implementation Case Study
+            </span>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 leading-tight">
+                從零到自動化分析：世新美食誌的 GA4 數據串接實作歷程
+            </h1>
+            <p class="text-gray-300 max-w-2xl mx-auto font-light text-sm sm:text-base">
+                本篇文章完整記錄了如何將 Google Analytics 4 整合至前端網頁，追蹤 YouTube 影音點擊自訂事件，並運用 Python 串接 Google Analytics Data API 進行自動化報告產出的全過程。
+            </p>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        <article class="bg-white rounded-3xl p-8 sm:p-12 shadow-sm border border-gray-100 prose max-w-none">
+            
+            <div class="flex items-center gap-4 text-sm text-gray-400 mb-8 border-b border-slate-100 pb-6">
+                <span class="flex items-center gap-1">📅 發表日期：2026-05-26</span>
+                <span>•</span>
+                <span class="flex items-center gap-1">👤 作者：世新美食誌開發團隊</span>
+                <span>•</span>
+                <span class="bg-primary/10 text-primary px-2.5 py-0.5 rounded-full font-bold text-xs">GA4 實作分享</span>
+            </div>
+
+            <!-- 引言 -->
+            <p class="text-lg text-gray-600 leading-relaxed mb-6 font-light">
+                在建置「世新美食誌」網站後，我們希望能夠深入瞭解使用者在網站上的實際行為。例如：他們最常瀏覽哪一家推薦美食？有多少人對我們的「影音特別企劃」感興趣並點擊播放？為了解答這些問題，我們規劃並完成了 <strong>Google Analytics 4 (GA4)</strong> 的深度串接。
+            </p>
+
+            <hr class="my-8 border-gray-100">
+
+            <!-- 步驟一 -->
+            <h2 class="text-2xl font-bold text-dark mb-4 flex items-center gap-2">
+                <span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black">1</span>
+                基本追蹤碼埋設 (Global Page Tag)
+            </h2>
+            <p class="text-gray-600 mb-4 leading-relaxed">
+                首先，我們在 Google Analytics 後台建立了專屬的 GA4 資源，取得衡量 ID <code>G-HDB1KMXVL4</code>。接著在網頁 <code>&lt;head&gt;</code> 中引入官方的 <code>gtag.js</code> 追蹤碼，確保網站上的基本行為（如：<code>page_view</code> 頁面瀏覽量、<code>first_visit</code> 首次造訪、<code>session_start</code> 工作階段開始）可以自動被收集。
+            </p>
+            <div class="bg-dark text-gray-200 p-5 rounded-2xl font-mono text-sm overflow-x-auto mb-8 shadow-inner">
+                <pre><code>&lt;!-- Google tag (gtag.js) --&gt;
+&lt;script async src="https://www.googletagmanager.com/gtag/js?id=G-HDB1KMXVL4"&gt;&lt;/script&gt;
+&lt;script&gt;
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HDB1KMXVL4');
+&lt;/script&gt;</code></pre>
+            </div>
+
+            <!-- 步驟二 -->
+            <h2 class="text-2xl font-bold text-dark mb-4 flex items-center gap-2">
+                <span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black">2</span>
+                自訂事件追蹤：偵測 YouTube 影片播放
+            </h2>
+            <p class="text-gray-600 mb-4 leading-relaxed">
+                除了一般點擊外，我們希望特別追蹤對「影音企劃」感興趣的使用者。我們利用了 <strong>YouTube Iframe Player API</strong> 來擷取影片播放器的狀態變化。當檢測到使用者點擊播放按鈕（狀態為 <code>YT.PlayerState.PLAYING</code>）時，立即向 GA4 發送一個名為 <code>interested_user</code> 的自訂事件：
+            </p>
+            <div class="bg-dark text-gray-200 p-5 rounded-2xl font-mono text-sm overflow-x-auto mb-8 shadow-inner">
+                <pre><code>var trackedPlay = false; // 避免重複發送
+function onPlayerStateChange(event) {
+    if (event.data == YT.PlayerState.PLAYING && !trackedPlay) {
+        if (typeof gtag === 'function') {
+            gtag('event', 'interested_user', {
+                'event_category': 'video',
+                'event_label': 'YouTube Video Play'
+            });
+            console.log('GA4 Event sent: interested_user');
+            trackedPlay = true; // 標記已發送，避免重複計算
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-r-2xl mb-8">
+                <p class="text-emerald-800 text-sm font-bold">💡 實作亮點：</p>
+                <p class="text-emerald-700 text-xs mt-1 leading-relaxed">
+                    透過設定 <code>trackedPlay</code> 旗標，系統可以避免使用者重複點擊暫停／播放時發送重複事件，確保數據的真實性。
+                </p>
+            </div>
+
+            <!-- 步驟三 -->
+            <h2 class="text-2xl font-bold text-dark mb-4 flex items-center gap-2">
+                <span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black">3</span>
+                自動化數據提取 (Google Analytics Data API)
+            </h2>
+            <p class="text-gray-600 mb-4 leading-relaxed">
+                為了不需要每次都登入 GA 後台看報表，我們使用 Python 串接了 <strong>Google Analytics Data API v1beta</strong>。
+                我們在本地環境中利用 Google 服務帳戶認證金鑰，撰寫自動化腳本來撈取每日的流量明細與自訂事件報表：
+            </p>
+            <div class="bg-dark text-gray-200 p-5 rounded-2xl font-mono text-sm overflow-x-auto mb-8 shadow-inner">
+                <pre><code>from google.analytics.data_v1beta import BetaAnalyticsDataClient
+from google.analytics.data_v1beta.types import RunReportRequest, DateRange, Dimension, Metric
+
+client = BetaAnalyticsDataClient()
+request = RunReportRequest(
+    property="properties/538936221", # 世新美食誌 GA4 資源 ID
+    dimensions=[Dimension(name="eventName")],
+    metrics=[Metric(name="eventCount"), Metric(name="activeUsers")],
+    date_ranges=[DateRange(start_date="2026-05-01", end_date="today")]
+)
+response = client.run_report(request=request)</code></pre>
+            </div>
+
+            <!-- 步驟四 -->
+            <h2 class="text-2xl font-bold text-dark mb-4 flex items-center gap-2">
+                <span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-black">4</span>
+                實作結果展示 (網站上線首日流量)
+            </h2>
+            <p class="text-gray-600 mb-6 leading-relaxed">
+                透過上述的 Python API 撈取腳本，我們成功取得了「世新美食誌」上線首日的數據成果，並驗證了自訂事件追蹤機制完全正常：
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8 text-center">
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <span class="text-3xl">👥</span>
+                    <h4 class="text-sm text-gray-400 font-bold mt-2">活躍使用者</h4>
+                    <p class="text-2xl font-black text-dark mt-1">2 人</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <span class="text-3xl">📄</span>
+                    <h4 class="text-sm text-gray-400 font-bold mt-2">頁面瀏覽次數</h4>
+                    <p class="text-2xl font-black text-dark mt-1">4 次</p>
+                </div>
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                    <span class="text-3xl">🎬</span>
+                    <h4 class="text-sm text-gray-400 font-bold mt-2">自訂事件 (interested_user)</h4>
+                    <p class="text-2xl font-black text-emerald-500 mt-1">1 次</p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold text-dark mb-3">首日事件收集明細：</h3>
+            <div class="overflow-x-auto mb-8">
+                <table class="min-w-full divide-y divide-slate-100 text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 text-left text-gray-500 font-bold">
+                            <th class="px-4 py-3 rounded-l-xl">事件名稱</th>
+                            <th class="px-4 py-3">事件觸發次數</th>
+                            <th class="px-4 py-3 rounded-r-xl">活躍使用者數</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-gray-600">
+                        <tr>
+                            <td class="px-4 py-3 font-mono font-bold">page_view</td>
+                            <td class="px-4 py-3">4 次</td>
+                            <td class="px-4 py-3">2 人</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono font-bold">first_visit</td>
+                            <td class="px-4 py-3">2 次</td>
+                            <td class="px-4 py-3">2 人</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3 font-mono font-bold">session_start</td>
+                            <td class="px-4 py-3">2 次</td>
+                            <td class="px-4 py-3">2 人</td>
+                        </tr>
+                        <tr class="bg-emerald-50/40 text-emerald-800">
+                            <td class="px-4 py-3 font-mono font-bold">interested_user (影片點擊)</td>
+                            <td class="px-4 py-3 font-bold">1 次</td>
+                            <td class="px-4 py-3">1 人</td>
+                        </tr>
+                        <tr class="bg-emerald-50/40 text-emerald-800">
+                            <td class="px-4 py-3 font-mono font-bold">video_start</td>
+                            <td class="px-4 py-3">1 次</td>
+                            <td class="px-4 py-3">1 人</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 總結 -->
+            <h2 class="text-2xl font-bold text-dark mb-4">結語</h2>
+            <p class="text-gray-600 leading-relaxed mb-4">
+                透過這次 GA4 資源的深度整合，不僅能精準掌握網站的基本瀏覽量，更重要的是能透過<strong>「自訂事件追蹤」</strong>去暸解使用者是否真的在觀看我們用心製作的影音指南，進而對美食指南的內容進行優化。這套流程能為後續的行銷分析提供有力的數據基石！
+            </p>
+        </article>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-dark text-white pt-8 pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            <p>&copy; 2026 世新美食誌 SHU Food Guide. GA4 Integration Analytics.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
