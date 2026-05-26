@@ -116,7 +116,7 @@
             <p class="text-gray-500 text-sm sm:text-base mt-3">跟著鏡頭開箱世新學生最愛的街頭美味與隱藏美食！</p>
         </div>
         <div class="aspect-video w-full rounded-3xl overflow-hidden shadow-lg border border-gray-100 bg-white p-2">
-            <iframe class="w-full h-full rounded-2xl" src="https://www.youtube.com/embed/IKW88z5n2Z8" title="世新美食影音指南" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <iframe id="youtube-player" class="w-full h-full rounded-2xl" src="https://www.youtube.com/embed/IKW88z5n2Z8?enablejsapi=1" title="世新美食影音指南" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
     </section>
 
@@ -1158,6 +1158,37 @@
                 }, intervalTime);
             });
         });
+
+        // 載入 YouTube Iframe Player API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // YouTube API 回呼
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // 當使用者播放影片時，向 GA4 發送「感興趣的使用者 (interested_user)」事件
+        var trackedPlay = false; // 避免重複發送
+        function onPlayerStateChange(event) {
+            if (event.data == YT.PlayerState.PLAYING && !trackedPlay) {
+                if (typeof gtag === 'function') {
+                    gtag('event', 'interested_user', {
+                        'event_category': 'video',
+                        'event_label': 'YouTube Video Play'
+                    });
+                    console.log('GA4 Event sent: interested_user');
+                    trackedPlay = true; // 標記已發送，避免重複點按重複洗版
+                }
+            }
+        }
     </script>
 </body>
 </html>
