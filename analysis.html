@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PTT 美食數據看板 | 世新大學周邊美食指南</title>
+    <meta name="description" content="PTT Food 板最新發文數據統計分析，包含貼文類型、熱門美食地區及關鍵字統計。">
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 自訂 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#FF6B6B',
+                        secondary: '#4ECDC4',
+                        dark: '#2D3436'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 引入 Google Fonts: Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- 導覽列 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span class="font-bold text-xl text-dark tracking-wide">世新美食誌</span>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-primary font-medium transition">返回首頁</a>
+                    <a href="analysis.html" class="text-primary font-bold transition">PTT 美食數據</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 頂部 Header -->
+    <header class="bg-dark text-white py-12 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-30"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl sm:text-4xl font-black mb-4">📊 PTT 美食板即時數據看板</h1>
+            <p class="text-gray-300 max-w-xl mx-auto font-light text-sm sm:text-base">
+                透過 Firecrawl 爬蟲技術，即時分析 PTT Food 板最新三頁貼文，解密網路當紅美食與最夯討論地區！
+            </p>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        
+        <!-- 核心指標卡片 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-primary/10 text-primary rounded-xl text-2xl">📝</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">分析總貼文數</p>
+                    <p class="text-2xl font-black text-dark">53 篇</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-secondary/10 text-secondary rounded-xl text-2xl">🗺️</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">最熱門討論地區</p>
+                    <p class="text-2xl font-black text-dark">台北市 (23.9%)</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-yellow-500/10 text-yellow-600 rounded-xl text-2xl">✍️</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">最活躍美食客</p>
+                    <p class="text-2xl font-black text-dark">chickenbo</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-purple-500/10 text-purple-600 rounded-xl text-2xl">⏱️</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">數據更新時間</p>
+                    <p class="text-sm font-black text-dark mt-1">2026-05-26 21:20</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 圖表展示區 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+            <!-- 貼文類型圖表 -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                    <span class="text-primary">●</span> 貼文類型比例 (Category Distribution)
+                </h3>
+                <div class="relative h-64 sm:h-80 flex justify-center items-center">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 熱門美食地區圖表 -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                    <span class="text-secondary">●</span> 前五大討論熱門地區
+                </h3>
+                <div class="relative h-64 sm:h-80 flex justify-center items-center">
+                    <canvas id="locationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 活躍作者排行 -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                    <span class="text-yellow-500">●</span> 最具影響力美食分享者排行
+                </h3>
+                <div class="relative h-64 sm:h-80 flex justify-center items-center">
+                    <canvas id="authorChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 熱門美食關鍵字 -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                        <span class="text-purple-500">●</span> 貼文熱門標籤字詞
+                    </h3>
+                    <div class="flex flex-wrap gap-2.5">
+                        <span class="px-3.5 py-1.5 bg-primary/10 text-primary font-bold text-sm rounded-full"># 台北信義 (3次)</span>
+                        <span class="px-3.5 py-1.5 bg-secondary/10 text-secondary font-bold text-sm rounded-full"># 台南東區 (3次)</span>
+                        <span class="px-3.5 py-1.5 bg-yellow-500/10 text-yellow-600 font-bold text-sm rounded-full"># 台南南區 (3次)</span>
+                        <span class="px-3.5 py-1.5 bg-purple-500/10 text-purple-600 font-bold text-sm rounded-full"># 廣島美食 (2次)</span>
+                        <span class="px-3.5 py-1.5 bg-emerald-500/10 text-emerald-600 font-bold text-sm rounded-full"># 倫敦牛排 (2次)</span>
+                        <span class="px-3.5 py-1.5 bg-blue-500/10 text-blue-600 font-bold text-sm rounded-full"># 愛爾蘭炸魚 (2次)</span>
+                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 初魚鐵板燒</span>
+                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 糯米水餃</span>
+                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 儂安益麵館</span>
+                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 500碗老麵店</span>
+                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># SALT & STONE</span>
+                    </div>
+                </div>
+                <div class="mt-6 p-5 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p class="text-xs text-gray-400 font-bold mb-1.5">💡 數據小解析：</p>
+                    <p class="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                        本期除了常見的雙北與台南美食戰區，國外部分如 **日本廣島、英國倫敦、愛爾蘭斯立果** 的精選食記也登上了熱門榜，顯示美食板友近期海外旅遊與異國料理的分享十分盛行！
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-dark text-white pt-8 pb-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            <p>&copy; 2026 世新美食誌 SHU Food Guide. PTT Scraper powered by Firecrawl.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 初始化 Chart.js 圖表
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // 1. 貼文類型圓餅圖 (Pie Chart)
+            const ctxCat = document.getElementById('categoryChart').getContext('2d');
+            new Chart(ctxCat, {
+                type: 'pie',
+                data: {
+                    labels: ['食記', '公告', '抱怨', '轉讓', '請益'],
+                    datasets: [{
+                        data: [46, 4, 1, 1, 1],
+                        backgroundColor: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#2D3436', '#A29BFE'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 2. 地區發文柱狀圖 (Bar Chart)
+            const ctxLoc = document.getElementById('locationChart').getContext('2d');
+            new Chart(ctxLoc, {
+                type: 'bar',
+                data: {
+                    labels: ['台北', '台南', '桃園', '新竹', '廣島', '愛爾蘭', '新北', '倫敦'],
+                    datasets: [{
+                        label: '發文篇數',
+                        data: [11, 9, 3, 2, 2, 2, 2, 2],
+                        backgroundColor: '#4ECDC4',
+                        borderRadius: 8,
+                        hoverBackgroundColor: '#3dbbb2'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // 3. 活躍發文者排行 (Horizontal Bar Chart)
+            const ctxAut = document.getElementById('authorChart').getContext('2d');
+            new Chart(ctxAut, {
+                type: 'bar',
+                data: {
+                    labels: ['chickenbo', 'larle', 'Geiwoyujie', 'fitten', 'Lefair'],
+                    datasets: [{
+                        data: [8, 5, 5, 3, 3],
+                        backgroundColor: '#FF6B6B',
+                        borderRadius: 8,
+                        hoverBackgroundColor: '#ee5b5b'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f1f5f9'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
