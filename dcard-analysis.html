@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HDB1KMXVL4"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-HDB1KMXVL4');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dcard 輿情與情感分析看板 | 世新大學周邊美食指南</title>
+    <meta name="description" content="Dcard 世新大學板最新討論語意情感統計與文字雲視覺化分析。">
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 自訂 Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#FF6B6B',
+                        secondary: '#4ECDC4',
+                        dark: '#2D3436'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 引入 Google Fonts: Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased flex flex-col min-h-screen">
+
+    <!-- 導覽列 -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    <span class="font-bold text-xl text-dark tracking-wide">世新美食誌</span>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="text-gray-600 hover:text-primary font-medium transition">返回首頁</a>
+                    <a href="analysis.html" class="text-gray-600 hover:text-primary font-medium transition">PTT 美食數據</a>
+                    <a href="dcard-analysis.html" class="text-primary font-bold transition">Dcard 輿情分析</a>
+                    <a href="ga-tutorial.html" class="text-gray-600 hover:text-primary font-medium transition">GA4 串接歷程</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 頂部 Header -->
+    <header class="bg-dark text-white py-12 relative overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-40"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-3xl sm:text-4xl font-black mb-4">💬 Dcard 世新大學板輿情與情感分析</h1>
+            <p class="text-gray-300 max-w-xl mx-auto font-light text-sm sm:text-base">
+                透過 Firecrawl 進行動態滾動抓取，分析最新 30 則貼文的情感語意，找出校園熱議關鍵字與情緒傾向！
+            </p>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        
+        <!-- 核心指標卡片 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-primary/10 text-primary rounded-xl text-2xl">📊</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">分析總貼文數</p>
+                    <p class="text-2xl font-black text-dark">30 則</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-green-500/10 text-green-600 rounded-xl text-2xl">😊</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">正面情緒比例</p>
+                    <p class="text-2xl font-black text-green-600">10.0%</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-red-500/10 text-red-600 rounded-xl text-2xl">😢</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">負面情緒比例</p>
+                    <p class="text-2xl font-black text-red-600">83.3%</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div class="p-4 bg-purple-500/10 text-purple-600 rounded-xl text-2xl">⏱️</div>
+                <div>
+                    <p class="text-xs text-gray-400 font-bold">數據更新時間</p>
+                    <p class="text-sm font-black text-dark mt-1">2026-05-26 22:30</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 圖表與文字雲展示區 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+            <!-- 貼文情感圓餅圖 -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                    <span class="text-primary">●</span> 情感比例分佈 (Sentiment Distribution)
+                </h3>
+                <div class="relative h-64 sm:h-80 flex justify-center items-center">
+                    <canvas id="sentimentChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 熱門討論文字雲 -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
+                <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                    <span class="text-secondary">●</span> 世新大學板熱門關鍵字文字雲
+                </h3>
+                <div class="rounded-2xl overflow-hidden border border-gray-100">
+                    <img src=".firecrawl/dcard-wordcloud.png" alt="Dcard Word Cloud" class="w-full h-auto object-cover">
+                </div>
+            </div>
+        </div>
+
+        <!-- 詳細貼文情感分析表格 -->
+        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 mb-10 overflow-hidden">
+            <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                <span class="text-primary">●</span> 前 30 則貼文情感分析詳細清單
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">編號</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">標題</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">作者/分類</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">時間</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">情緒狀態</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">得分</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">連結</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm">
+                            <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="週二 6、7節 韓文基礎 崔聖玟老師">週二 6、7節 韓文基礎 崔聖玟老師</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">今天有事沒有去上課 想請問一下老師在群組發的下禮拜上台報告 自我介紹內容有規定需要什麼內容嗎 還是自己想就好了 麻煩知道的可以解答一下謝謝🙏🏻🙏🏻 [A](https://www.dcard.tw/@a950529)</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 廣播電視電影學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800">正面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.6696</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261553617" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">2</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="有人要🀄️嗎 10:30冠勝-1">有人要🀄️嗎 10:30冠勝-1</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">都是世新大學的學生 新手🍊，30/10就好</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">[1allen](https://www.dcard.tw/@a950529)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-800">中立</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.4547</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261553585" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">3</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="請問有修科學教育與傳播通識課的同學嗎">請問有修科學教育與傳播通識課的同學嗎</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">想請問書面報告跟期末報告同時繳交是要印出來文件嗎？謝謝美女帥哥</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">2h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0091</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261553437" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">4</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="打工徵人 牙醫助理！">打工徵人 牙醫助理！</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">《西安牙醫》\*地點：台北市文山區羅斯福路六段296號（離學校很近，走路10分鐘左右，離景美捷運站也很近，走路2分鐘），\*內容：1.﻿﻿整理診所，2.接待病患，3.排約診表，4.輔助醫生看診，5.基本清</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 法律學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">3h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.2655</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261553123" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">5</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="課程調查問卷">課程調查問卷</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">求求大家幫忙填個問卷 跟電玩遊戲有相關的，有填的好人 祝福你們 全部all pass，拜託了 [大學生遊戲習慣與生活資源配置調查問卷\\ \\ 同學您好：本問卷旨在探討大學生在課業（課業、報告）與娛樂之間的「時間分配與自我調節習慣」。本問卷...</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 觀光系餐旅經營管理組</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">6h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0146</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261552008" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">6</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="數媒系學生證遺失">數媒系學生證遺失</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">我今天不會再進學校了 但你的學生證剛剛掉在考試院往木柵的公車站牌！你有看到要趕快去拿，幫你放在樹的木板上！趕快領取喔！</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">6h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0047</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551851" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">7</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="週四8-9節韓語口語內容">週四8-9節韓語口語內容</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">有同學上這節嗎？想問一下韓語通識這週的口語測驗內容是甚麼</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">6h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551796" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">8</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="未來提案工作坊【活動報名】">未來提案工作坊【活動報名】</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">害怕被AI取代嗎？擔心履歷不夠完美？想累積更多人脈？4天3夜讓你的想法落地，打造未來作品集🤩，你將會獲得：☑️高密度提案實作 × 跨領域共創，☑️優秀提案將獲得基金會年度培力計畫及輔導，☑️未來每月Coff [【夏日Light House】...</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">7h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0786</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551743" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">9</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="避雷邱卉榛">避雷邱卉榛</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">我是上大一的簡報提案，第一堂課就想退選 上課超沒重點，點名可以點二十分鐘 一直講廢話，然後一直說自己是新來的老師對所有事情都不熟悉真不知道上了什麼鳥，超爛😂😂😂👍🏻👍🏻👍🏻，欸真的超無語都不知道還能說什麼了</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 公共關係暨廣告學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">7h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0469</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551616" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">10</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="《配音氣聲運用》社課宣傳">《配音氣聲運用》社課宣傳</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">知名配音員牛奶（江志倫）老師要來校廣啦！，配音表演中，除了台詞以外，各式各樣的反應、喊叫也是配音員必備的能力之一，牛奶老師會用什麼方式帶領大家探索氣聲的世界呢？歡迎對配音有興趣的同學們來玩😎，🥛牛奶老</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">8h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0012</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551435" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">11</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="【活動分享】進入行銷領域後才發現，大學先累積校園經驗真的差很多🥲">【活動分享】進入行銷領域後才發現，大學先累積校園經驗真的差很多🥲</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">進入行銷領域才發現，很多面試其實都會問：「有經營過社群嗎？」「有作品集嗎？」「有相關的活動經驗嗎？」但學生時期的我根本不知道這些東西要提前準備🤣，以前一直以為：等畢業 → 找實習 → 進公司 → 再慢 [校園流量研究所 \- 1111人力銀...</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">8h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551412" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">12</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="廣電系某老師真的很豬哥">廣電系某老師真的很豬哥</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">40好幾的人了 教學生用電腦的時候到底為什麼要整個身體靠在別人身上，好好站在旁邊不能教嗎？還在有學生追蹤的哀居帳號發很噁的限動，然後在脆上留言想要認識年輕女生，平常看起來老實老實 真的是人不可貌相</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 廣播電視電影學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">8h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800">正面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.9992</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551379" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">13</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="純抱怨">純抱怨</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">學校飲水機幾乎都沒有冰水就已經夠賭爛了，還壞掉 2月就發現他壞了 到現在還沒報修，學餐的門也是 上學期中就壞了到現在還沒修，學餐對面女廁的水龍頭、學餐的椅子，到底是有多忙沒空修==，反而是世新大禮堂大</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 法律學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">9h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0004</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261551071" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">14</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="J310掉落的線條小狗">J310掉落的線條小狗</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">5/26 12：00看到教室地上掉了一隻線條小狗，是誰的趕快把它帶回家～～幫你放白板溝了</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 廣播電視電影學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">10h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-800">中立</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.4283</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261550782" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">15</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="法律系暑修">法律系暑修</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">之前有發文詢問，目前憲法一已找到老師，謝曜州老師，開課時間：每週六2-4節、6-8節，開課期間：7/4-8/8，有意願修課的同學可以先加入群組🙏如有認識要修憲法一的也請廣為告知，需要湊滿十五人</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 法律學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">12h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261550260" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">16</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="拉亞你的薯條越來越難吃了😭😭😭">拉亞你的薯條越來越難吃了😭😭😭</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">之前都是金黃酥脆的，現在這個是什麽😭😭，又不脆又超油😭，昨天也長這樣，昨天還有黑胡椒，今天都沒有，每天退化一點嗎，那你下次是不是要給我馬鈴薯了✋😭🤚</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">12h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0006</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261550248" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">17</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="學生證遺失">學生證遺失</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">路上撿到的 但我今天真的不會經過行政大樓 求求此人行行好 快來認領 他的朋朋或者認識的人有看到記得提醒一下 拜託拜託了🥺🙏</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 資訊傳播學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">12h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.1567</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261550212" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">18</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="戰鬥陀螺表單">戰鬥陀螺表單</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">哈囉大家我們正在做戰鬥陀螺的調查，想請有玩戰鬥陀螺的各位可以留個時間幫我們填表單，好人一生平安😭 [戰鬥陀螺調查問卷\\ \\ https://docs.google.com/forms/d/e/1FAIpQLSeRjdUgp4sUtQP-...</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">22h</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261548876" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">19</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="畢業製作徵組員🎬">畢業製作徵組員🎬</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">大家好！我們目前正在尋找畢製合作夥伴，如果你對拍攝網路影音有興趣，歡迎加入我們～～目前企劃與拍攝器材都已經有了，但如果有其他想拍攝的題材也都還可以再討論！有興趣都可以私訊我們聊聊喔</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0064</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261546770" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">20</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="5/25 1600-1800 捨我樓10樓 找水壺">5/25 1600-1800 捨我樓10樓 找水壺</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">黑色長條型，有看到的話通知一下，感謝</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 資訊管理學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0004</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261546604" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">21</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="在圖書館的教室上課的同學們能不能安靜一點">在圖書館的教室上課的同學們能不能安靜一點</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">如題：）圖書館很多人在讀書，結果進出教室還嬉鬧、大吼大叫、追趕跑跳碰，請問是有什麼心事嗎😍❓甚至還跑到教室外面聊天== 大哥大姐們都幾歲的人了還不知道進出圖書館要輕聲細語嗎？可憐na🤕</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.1879</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261546416" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">22</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="世新大學喔a咖啡的未解之謎">世新大學喔a咖啡的未解之謎</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">我一直很好奇一件事，為什麼有的時候他會問你要不要免費加料，從我是大一新生的時候我就觀察這個規律，想說是不是料快過期了為了不浪費🤔，所以就會問同學要不要免費加料，但最近我發現他不是每個同學都會問，好幾次</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261546406" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">23</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="學餐餃眷">學餐餃眷</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">學餐都不知道要吃什麼了⋯餃眷好吃嗎？之前吃過水餃感覺很油，不知道其他的品項推不推～～</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0069</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261546222" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">24</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="桌子永遠那麼髒">桌子永遠那麼髒</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">是說，教室不是不讓吃東西，但可不可以有點公德心，吃完好歹擦一擦，每次都會有油滴，油印，是要叫下一個人怎麼用？順手的事很難嗎？ [Y](https://www.dcard.tw/@ycccc_16)</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0017</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261546152" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">25</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="找室友">找室友</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">我們是兩個大四的女生，因為大部分的整層住家都是三房為主，所以想要再找一位女生一起找房～～不知道有沒有人有興趣！^ ̳ ̫ ̳^ ♡，我們兩個的預算差不多是20000上下不含租補（但希望能找到有租補</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">[C](https://www.dcard.tw/@ycccc_16)</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261546149" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">26</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="徵 甜品店打工徵人">徵 甜品店打工徵人</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">暑假快到了！想打工又想交通方便嗎？這裡有個好機會‼️甜在心糖水鋪徵工讀生，🈚️相關經驗🆗、第一次打工🆗，🚩地點：甜在心糖水舖，新北市新店區大豐路47號，（捷運大坪林站步行3分鐘內可抵達），📆排班：彈性排班</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800">正面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.9365</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261545833" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">27</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="暑修公廣">暑修公廣</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">大家好，我去年的暑假也有開過公廣系的暑修因為我是轉學生的部分，所以學分上還有一些欠缺想問大家是否有興趣一起暑修呢？外系的朋友也可以喔！或是想要一起修通識課的，也可以在下方留言！目前我只剩下傳播理論、運</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學 公共關係暨廣告學系</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261545396" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">28</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="基礎韓語 分組">基礎韓語 分組</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">禮拜四 3-4節的，有人要一起嗎～我應該是下一週考的</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0194</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261545129" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">29</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="求租">求租</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">想請問學長姐或是同學退租的房子，目前想住獨立套房，預算10000 可租補房租可再討論，學校附近/大坪林/新店/萬隆/公館/台電大樓等等都可看看⋯⋯</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0011</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261544791" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                                <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">30</td>
+                            <td class="px-6 py-4">
+                                <div class="font-bold text-gray-900 truncate max-w-xs sm:max-w-md" title="財金系暑修-財管（二）">財金系暑修-財管（二）</div>
+                                <div class="text-xs text-gray-400 truncate max-w-xs sm:max-w-md mt-1">請問有沒有同學缺財管（二）的學分？我是畢業生可以當召集人～只需要10人就可以開班了🥹</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">世新大學</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500">1d</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-800">負面</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-500 font-mono">0.0116</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-primary font-bold">
+                                <a href="https://www.dcard.tw/f/shu/p/261544502" target="_blank" class="hover:underline">開啟 🔗</a>
+                            </td>
+                        </tr>
+                            </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="bg-dark text-white pt-8 pb-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            <p>&copy; 2026 世新美食誌 SHU Food Guide. Dcard Analysis powered by Firecrawl.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctxSentiment = document.getElementById('sentimentChart').getContext('2d');
+            new Chart(ctxSentiment, {
+                type: 'pie',
+                data: {
+                    labels: ['正面 (Positive)', '中立 (Neutral)', '負面 (Negative)'],
+                    datasets: [{
+                        data: [3, 2, 25],
+                        backgroundColor: ['#10B981', '#6B7280', '#EF4444'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
