@@ -141,28 +141,34 @@
             <!-- 熱門美食關鍵字 -->
             <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between">
                 <div>
-                    <h3 class="text-lg font-bold text-dark mb-6 flex items-center gap-2">
+                    <h3 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
                         <span class="text-purple-500">●</span> 貼文熱門標籤字詞
                     </h3>
-                    <div class="flex flex-wrap gap-2.5">
-                        <span class="px-3.5 py-1.5 bg-primary/10 text-primary font-bold text-sm rounded-full"># 台北信義 (3次)</span>
-                        <span class="px-3.5 py-1.5 bg-secondary/10 text-secondary font-bold text-sm rounded-full"># 台南東區 (3次)</span>
-                        <span class="px-3.5 py-1.5 bg-yellow-500/10 text-yellow-600 font-bold text-sm rounded-full"># 台南南區 (3次)</span>
-                        <span class="px-3.5 py-1.5 bg-purple-500/10 text-purple-600 font-bold text-sm rounded-full"># 廣島美食 (2次)</span>
-                        <span class="px-3.5 py-1.5 bg-emerald-500/10 text-emerald-600 font-bold text-sm rounded-full"># 倫敦牛排 (2次)</span>
-                        <span class="px-3.5 py-1.5 bg-blue-500/10 text-blue-600 font-bold text-sm rounded-full"># 愛爾蘭炸魚 (2次)</span>
-                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 初魚鐵板燒</span>
-                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 糯米水餃</span>
-                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 儂安益麵館</span>
-                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># 500碗老麵店</span>
-                        <span class="px-3.5 py-1.5 bg-gray-100 text-gray-600 text-sm rounded-full"># SALT & STONE</span>
+                    <p class="text-gray-400 text-xs mb-4">💡 點擊下方關鍵字標籤，可直接查看主題摘要與 PTT 相關討論！</p>
+                    <div class="flex flex-wrap gap-2.5 mb-6" id="keywords-container">
+                        <button class="keyword-btn px-3.5 py-1.5 bg-slate-100 hover:bg-primary/20 hover:text-primary text-gray-700 font-bold text-sm rounded-full transition" data-keyword="台北信義"># 台北信義 (3次)</button>
+                        <button class="keyword-btn px-3.5 py-1.5 bg-slate-100 hover:bg-primary/20 hover:text-primary text-gray-700 font-bold text-sm rounded-full transition" data-keyword="台南東區"># 台南東區 (3次)</button>
+                        <button class="keyword-btn px-3.5 py-1.5 bg-slate-100 hover:bg-primary/20 hover:text-primary text-gray-700 font-bold text-sm rounded-full transition" data-keyword="台南南區"># 台南南區 (3次)</button>
+                        <button class="keyword-btn px-3.5 py-1.5 bg-slate-100 hover:bg-primary/20 hover:text-primary text-gray-700 font-bold text-sm rounded-full transition" data-keyword="廣島"># 廣島美食 (2次)</button>
+                        <button class="keyword-btn px-3.5 py-1.5 bg-slate-100 hover:bg-primary/20 hover:text-primary text-gray-700 font-bold text-sm rounded-full transition" data-keyword="倫敦"># 倫敦牛排 (2次)</button>
+                        <button class="keyword-btn px-3.5 py-1.5 bg-slate-100 hover:bg-primary/20 hover:text-primary text-gray-700 font-bold text-sm rounded-full transition" data-keyword="愛爾蘭"># 愛爾蘭美食 (2次)</button>
                     </div>
                 </div>
-                <div class="mt-6 p-5 bg-slate-50 rounded-2xl border border-slate-100">
-                    <p class="text-xs text-gray-400 font-bold mb-1.5">💡 數據小解析：</p>
-                    <p class="text-gray-600 text-xs sm:text-sm leading-relaxed">
-                        本期除了常見的雙北與台南美食戰區，國外部分如 **日本廣島、英國倫敦、愛爾蘭斯立果** 的精選食記也登上了熱門榜，顯示美食板友近期海外旅遊與異國料理的分享十分盛行！
+                <div id="keyword-summary-box" class="p-5 bg-slate-50 rounded-2xl border border-slate-100 min-h-[140px] transition-all duration-300">
+                    <p class="text-xs text-primary font-bold mb-2 flex items-center gap-1">
+                        <span>💡</span> <span id="summary-title">台北信義 討論摘要</span>
                     </p>
+                    <p id="summary-desc" class="text-gray-600 text-xs sm:text-sm leading-relaxed mb-4">
+                        信義區主要討論高檔精緻料理與熱門百貨美食，本期包含「初魚鮨 鐵板料亭（台北101）」、「SALT & STONE」義式餐廳及「台北莫爾頓牛排館」，反映出該區指標性高質感餐飲的討論度。
+                    </p>
+                    <div id="summary-posts" class="space-y-1.5 border-t border-slate-200/60 pt-3">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">相關看板貼文：</p>
+                        <div id="posts-list" class="space-y-1">
+                            <a href="https://www.ptt.cc/bbs/Food/M.1779628703.A.3C3.html" target="_blank" class="block text-xs text-secondary hover:underline truncate">🔗 [食記] 台北信義 初魚｜鮨 · 鐵板料亭-台北101</a>
+                            <a href="https://www.ptt.cc/bbs/Food/M.1779668400.A.C6B.html" target="_blank" class="block text-xs text-secondary hover:underline truncate">🔗 [食記] 台北信義 SALT & STONE</a>
+                            <a href="https://www.ptt.cc/bbs/Food/M.1779756532.A.74D.html" target="_blank" class="block text-xs text-secondary hover:underline truncate">🔗 [食記] 台北信義 台北莫爾頓牛排館</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -277,6 +283,108 @@
                         }
                     }
                 }
+            });
+
+            // 4. 關鍵字摘要動態點擊切換
+            const keywordSummaries = {
+                '台北信義': {
+                    desc: '信義區主要討論高檔精緻料理與熱門百貨美食，本期包含「初魚鮨 鐵板料亭（台北101）」、「SALT & STONE」義式餐廳及「台北莫爾頓牛排館」，反映出該區指標性高質感餐飲的討論度。',
+                    posts: [
+                        { title: '[食記] 台北信義 初魚｜鮨 · 鐵板料亭-台北101', link: 'https://www.ptt.cc/bbs/Food/M.1779628703.A.3C3.html' },
+                        { title: '[食記] 台北信義 SALT & STONE', link: 'https://www.ptt.cc/bbs/Food/M.1779668400.A.C6B.html' },
+                        { title: '[食記] 台北信義 台北莫爾頓牛排館', link: 'https://www.ptt.cc/bbs/Food/M.1779756532.A.74D.html' }
+                    ]
+                },
+                '台南東區': {
+                    desc: '台南東區討論主題多元，包含適合聚餐的韓式料理「韓朝崇明店」、高CP值鐵板燒「喜多鐵板燒」以及配料飽滿飽足的傳統「曉琦飯糰」。',
+                    posts: [
+                        { title: '[食記] 台南東區 韓朝崇明店 當月壽星送蒸蛋鍋', link: 'https://www.ptt.cc/bbs/Food/M.1779402389.A.28B.html' },
+                        { title: '[食記] 台南東區 喜多鐵板燒 附自助吧 可續蔬菜', link: 'https://www.ptt.cc/bbs/Food/M.1779717294.A.D42.html' },
+                        { title: '[食記] 台南東區 曉琦飯糰 很大顆內餡飽滿', link: 'https://www.ptt.cc/bbs/Food/M.1779286108.A.936.html' }
+                    ]
+                },
+                '台南南區': {
+                    desc: '本期台南南區討論聚焦在平價庶民美食，包含新開幕的高CP值「品晟精緻美味便當」、「夏林越南法國麵包涼麵」及超劃算的「家佳早點二店（法式吐司25元）」。',
+                    posts: [
+                        { title: '[食記] 台南南區 品晟精緻美味便當 新開幕', link: 'https://www.ptt.cc/bbs/Food/M.1779285881.A.321.html' },
+                        { title: '[食記] 台南南區 夏林越南法國麵包涼麵 巨無霸級', link: 'https://www.ptt.cc/bbs/Food/M.1779102298.A.075.html' },
+                        { title: '[食記] 台南南區 家佳早點二店 法式吐司25元', link: 'https://www.ptt.cc/bbs/Food/M.1779103161.A.11F.html' }
+                    ]
+                },
+                '廣島': {
+                    desc: '日本廣島地區本期有高質感的鐵板燒餐廳「鉄板燒・愛宕」與極富盛名的在地創作料理「鷹ノ橋 清耽」，出國旅遊熱潮讓日本在地精緻餐飲極受關注。',
+                    posts: [
+                        { title: '[食記] 廣島｜鐵板燒｜鉄板燒・愛宕', link: 'https://www.ptt.cc/bbs/Food/M.1779702985.A.C70.html' },
+                        { title: '[食記] 廣島｜創作料理｜鷹ノ橋 鐵板燒清耽', link: 'https://www.ptt.cc/bbs/Food/M.1779260656.A.FD0.html' }
+                    ]
+                },
+                '倫敦': {
+                    desc: '英國倫敦地區討論集中在肉類與精緻排餐餐飲，包含大名鼎鼎的連鎖平價牛排「Flat Iron」以及主打現代英國菜概念的指標餐廳「Fallow」。',
+                    posts: [
+                        { title: '[食記] 倫敦 在地平價連鎖牛排-Flat Iron', link: 'https://www.ptt.cc/bbs/Food/M.1779035651.A.998.html' },
+                        { title: '[食記] 倫敦 現代英國菜餐廳-fallow', link: 'https://www.ptt.cc/bbs/Food/M.1779560953.A.2A6.html' }
+                    ]
+                },
+                '愛爾蘭': {
+                    desc: '本期較特殊的歐洲異國美食分享，版友介紹了愛爾蘭斯立果（Sligo）地區的經典酒館美食，包含「Sligo Langs Bar」與「Sligo Yeats Tavern」的炸魚薯條及烤雞翅。',
+                    posts: [
+                        { title: '[食記] 愛爾蘭斯立果Sligo Langs Bar 炸魚薯條等', link: 'https://www.ptt.cc/bbs/Food/M.1779386302.A.FCE.html' },
+                        { title: '[食記] 愛爾蘭斯立果Sligo Yeats Tavern 雞翅', link: 'https://www.ptt.cc/bbs/Food/M.1779466337.A.393.html' }
+                    ]
+                }
+            };
+
+            const keywordBtns = document.querySelectorAll('.keyword-btn');
+            const summaryTitle = document.getElementById('summary-title');
+            const summaryDesc = document.getElementById('summary-desc');
+            const postsList = document.getElementById('posts-list');
+            const summaryBox = document.getElementById('keyword-summary-box');
+
+            // 初始化時為第一個按鈕加上選中樣式
+            const setActiveStyle = (btn) => {
+                keywordBtns.forEach(b => {
+                    b.classList.remove('bg-primary/20', 'text-primary');
+                    b.classList.add('bg-slate-100', 'text-gray-700');
+                });
+                btn.classList.remove('bg-slate-100', 'text-gray-700');
+                btn.classList.add('bg-primary/20', 'text-primary');
+            };
+
+            // 先為第一個設樣式
+            if (keywordBtns.length > 0) {
+                setActiveStyle(keywordBtns[0]);
+            }
+
+            keywordBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const kw = btn.getAttribute('data-keyword');
+                    const data = keywordSummaries[kw];
+
+                    if (data) {
+                        // 加上動態淡入淡出效果
+                        summaryBox.style.opacity = '0.5';
+                        summaryBox.style.transform = 'translateY(2px)';
+
+                        setTimeout(() => {
+                            setActiveStyle(btn);
+                            summaryTitle.textContent = `${kw} 討論摘要`;
+                            summaryDesc.textContent = data.desc;
+
+                            // 渲染相關連結
+                            postsList.innerHTML = '';
+                            data.posts.forEach(p => {
+                                postsList.innerHTML += `
+                                    <a href="${p.link}" target="_blank" class="block text-xs text-secondary hover:underline truncate">
+                                        🔗 ${p.title}
+                                    </a>
+                                `;
+                            });
+
+                            summaryBox.style.opacity = '1';
+                            summaryBox.style.transform = 'translateY(0)';
+                        }, 150);
+                    }
+                });
             });
         });
     </script>
